@@ -9,8 +9,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import com.github.mrbean355.bulldog.components.AppWindow
+import com.github.mrbean355.bulldog.localization.getString
 
 @Composable
 @Preview
@@ -27,7 +28,11 @@ fun App() {
 }
 
 fun main() = application {
-    Window(onCloseRequest = ::exitApplication) {
+    AppWindow(
+        title = getString("home.title"),
+        escapeClosesWindow = false,
+        onCloseRequest = ::exitApplication
+    ) {
         App()
     }
 }
