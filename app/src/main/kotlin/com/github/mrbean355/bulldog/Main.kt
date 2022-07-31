@@ -1,3 +1,19 @@
+/*
+ * Copyright 2022 Michael Johnston
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.mrbean355.bulldog
 
 import androidx.compose.foundation.layout.height
@@ -7,6 +23,7 @@ import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,6 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.application
 import com.github.mrbean355.bulldog.components.AppWindow
+import com.github.mrbean355.bulldog.gsi.GameStateMonitor
+import com.github.mrbean355.bulldog.home.HomeScreen
 import com.github.mrbean355.bulldog.localization.getString
 
 fun main() = application {
@@ -44,13 +63,17 @@ fun main() = application {
             activeTab.content()
         }
     }
+
+    LaunchedEffect(Unit) {
+        GameStateMonitor.start()
+    }
 }
 
 private enum class MainTab(
     val label: String,
     val content: @Composable () -> Unit
 ) {
-    Home(label = "home.tab.home", content = { Placeholder() }),
+    Home(label = "home.tab.home", content = { HomeScreen() }),
     Sounds(label = "home.tab.sounds", content = { Placeholder() }),
     DiscordBot(label = "home.tab.discord", content = { Placeholder() }),
     Settings(label = "home.tab.settings", content = { Placeholder() }),
