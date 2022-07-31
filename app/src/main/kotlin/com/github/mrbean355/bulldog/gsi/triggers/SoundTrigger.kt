@@ -16,6 +16,7 @@
 
 package com.github.mrbean355.bulldog.gsi.triggers
 
+import com.github.mrbean355.bulldog.localization.getString
 import com.github.mrbean355.dota2.gamestate.PlayingGameState
 import kotlin.reflect.KClass
 
@@ -43,3 +44,35 @@ interface SoundTrigger {
     fun shouldPlay(previous: PlayingGameState, current: PlayingGameState): Boolean
 
 }
+
+val SoundTriggerType.label: String
+    get() = when (this) {
+        OnBountyRunesSpawn::class -> getString("trigger_name_bounty_runes")
+        OnDeath::class -> getString("trigger_name_death")
+        OnDefeat::class -> getString("trigger_name_defeat")
+        OnHeal::class -> getString("trigger_name_heal")
+        OnKill::class -> getString("trigger_name_kill")
+        OnMatchStart::class -> getString("trigger_name_match_start")
+        OnMidasReady::class -> getString("trigger_name_midas_ready")
+        OnRespawn::class -> getString("trigger_name_respawn")
+        OnSmoked::class -> getString("trigger_name_smoked")
+        OnVictory::class -> getString("trigger_name_victory")
+        Periodically::class -> getString("trigger_name_periodically")
+        else -> throw IllegalArgumentException("Unexpected type: $this")
+    }
+
+val SoundTriggerType.description: String
+    get() = when (this) {
+        OnBountyRunesSpawn::class -> getString("trigger_desc_bounty_runes")
+        OnDeath::class -> getString("trigger_desc_death")
+        OnDefeat::class -> getString("trigger_desc_defeat")
+        OnHeal::class -> getString("trigger_desc_heal")
+        OnKill::class -> getString("trigger_desc_kill")
+        OnMatchStart::class -> getString("trigger_desc_match_start")
+        OnMidasReady::class -> getString("trigger_desc_midas_ready")
+        OnRespawn::class -> getString("trigger_desc_respawn")
+        OnSmoked::class -> getString("trigger_desc_smoked")
+        OnVictory::class -> getString("trigger_desc_victory")
+        Periodically::class -> getString("trigger_desc_periodically")
+        else -> throw IllegalArgumentException("Unexpected type: $this")
+    }

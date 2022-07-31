@@ -35,6 +35,7 @@ import com.github.mrbean355.bulldog.components.AppWindow
 import com.github.mrbean355.bulldog.gsi.GameStateMonitor
 import com.github.mrbean355.bulldog.home.HomeScreen
 import com.github.mrbean355.bulldog.localization.getString
+import com.github.mrbean355.bulldog.sounds.ViewSoundTriggersScreen
 
 fun main() = application {
     AppWindow(
@@ -74,7 +75,7 @@ private enum class MainTab(
     val content: @Composable () -> Unit
 ) {
     Home(label = "home.tab.home", content = { HomeScreen() }),
-    Sounds(label = "home.tab.sounds", content = { Placeholder() }),
+    Sounds(label = "home.tab.sounds", content = { ViewSoundTriggersScreen() }),
     DiscordBot(label = "home.tab.discord", content = { Placeholder() }),
     Settings(label = "home.tab.settings", content = { Placeholder() }),
 }
