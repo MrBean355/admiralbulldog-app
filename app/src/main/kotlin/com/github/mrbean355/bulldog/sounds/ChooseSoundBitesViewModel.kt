@@ -16,6 +16,8 @@
 
 package com.github.mrbean355.bulldog.sounds
 
+import com.github.mrbean355.bulldog.data.SoundBite
+import com.github.mrbean355.bulldog.data.SoundBitesRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -24,11 +26,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import java.io.File
 
 class ChooseSoundBitesViewModel(
     private val viewModelScope: CoroutineScope
 ) {
+    private val soundBitesRepository = SoundBitesRepository()
+
     private val _sounds = MutableStateFlow<List<String>>(emptyList())
     private val _query = MutableStateFlow("")
 
@@ -39,11 +42,8 @@ class ChooseSoundBitesViewModel(
     val query: StateFlow<String> = _query.asStateFlow()
 
     fun init() {
-        viewModelScope.launch(Dispatchers.IO) {
-            // TODO: get available sounds properly:
-            _sounds.value = File("sounds").listFiles().orEmpty().map {
-                it.nameWithoutExtension
-            }
+        viewModelScope.launch(Dispatchers.Default) {
+            _sounds.value = soundBitesRepository.getAllSoundBites().map(SoundBite::name).sorted()
         }
     }
 
