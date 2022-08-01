@@ -28,7 +28,10 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +53,8 @@ fun ConfigureSoundTriggerScreen(
     onCloseRequest = onCloseRequest
 ) {
     val viewModel = remember { ConfigureSoundTriggerViewModel() }
+
+    var showChooseSoundsScreen by remember { mutableStateOf(false) }
 
     Scaffold {
         Column(
@@ -90,10 +95,14 @@ fun ConfigureSoundTriggerScreen(
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                OutlinedButton(onClick = {}) {
+                OutlinedButton(onClick = { showChooseSoundsScreen = true }) {
                     Text(getString("triggers.configure.sounds.change"))
                 }
             }
         }
+    }
+
+    if (showChooseSoundsScreen) {
+        ChooseSoundBitesScreen(triggerType, onCloseRequest = { showChooseSoundsScreen = false })
     }
 }
