@@ -16,6 +16,7 @@
 
 package com.github.mrbean355.bulldog.sounds
 
+import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
 import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerTypes
 import com.github.mrbean355.bulldog.gsi.triggers.description
 import com.github.mrbean355.bulldog.gsi.triggers.label
@@ -30,15 +31,12 @@ class ViewSoundTriggersViewModel {
 
     fun init() {
         _items.value = SoundTriggerTypes.map {
-            Item(it.label, it.description)
+            Item(it, it.label, it.description)
         }
     }
 
-    fun onItemClicked(item: Item) {
-        // TODO: navigate to trigger config
-    }
-
     data class Item(
+        val type: SoundTriggerType,
         val label: String,
         val subLabel: String
     )

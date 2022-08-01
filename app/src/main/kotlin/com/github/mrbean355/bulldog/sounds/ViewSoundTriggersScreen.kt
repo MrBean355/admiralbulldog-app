@@ -33,10 +33,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
 
 @Composable
 @OptIn(ExperimentalMaterialApi::class)
@@ -44,6 +47,8 @@ fun ViewSoundTriggersScreen() {
     val viewModel = remember { ViewSoundTriggersViewModel() }
     val items by viewModel.items.collectAsState()
     val listState = rememberLazyListState()
+
+    var clickedItem by remember { mutableStateOf<SoundTriggerType?>(null) }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -56,7 +61,7 @@ fun ViewSoundTriggersScreen() {
                 ListItem(
                     text = { Text(text = item.label) },
                     secondaryText = { Text(text = item.subLabel) },
-                    modifier = Modifier.clickable { viewModel.onItemClicked(item) }
+                    modifier = Modifier.clickable { clickedItem = item.type }
                 )
             }
         }
@@ -70,5 +75,9 @@ fun ViewSoundTriggersScreen() {
 
     LaunchedEffect(Unit) {
         viewModel.init()
+    }
+
+    clickedItem?.let {
+        ConfigureSoundTriggerScreen(it, onCloseRequest = { clickedItem = null })
     }
 }
