@@ -18,16 +18,22 @@ package com.github.mrbean355.bulldog.sounds
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.github.mrbean355.bulldog.data.AppConfig
+import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
+import com.github.mrbean355.bulldog.gsi.triggers.configKey
 
-class ConfigureSoundTriggerViewModel {
+class ConfigureSoundTriggerViewModel(
+    private val triggerType: SoundTriggerType
+) {
     // TODO: read from config:
-    private val _isEnabled = mutableStateOf(false)
+    private val _isEnabled = mutableStateOf(AppConfig.isTriggerEnabled(triggerType.configKey))
     private val _selectedSounds = mutableStateOf(0)
 
     val isEnabled: State<Boolean> = _isEnabled
     val selectedSounds: State<Int> = _selectedSounds
 
     fun onCheckChanged(value: Boolean) {
+        AppConfig.setTriggerEnabled(triggerType.configKey, value)
         _isEnabled.value = value
     }
 }

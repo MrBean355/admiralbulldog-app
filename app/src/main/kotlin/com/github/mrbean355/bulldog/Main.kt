@@ -32,12 +32,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.application
 import com.github.mrbean355.bulldog.components.AppWindow
+import com.github.mrbean355.bulldog.data.AppConfig
 import com.github.mrbean355.bulldog.gsi.GameStateMonitor
 import com.github.mrbean355.bulldog.home.HomeScreen
 import com.github.mrbean355.bulldog.localization.getString
 import com.github.mrbean355.bulldog.sounds.ViewSoundTriggersScreen
 
 fun main() = application {
+    AppConfig.initAsync()
+
     AppWindow(
         title = getString("home.title"),
         escapeClosesWindow = false,

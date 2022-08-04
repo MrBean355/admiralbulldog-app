@@ -52,7 +52,7 @@ fun ConfigureSoundTriggerScreen(
     size = DpSize(400.dp, 600.dp),
     onCloseRequest = onCloseRequest
 ) {
-    val viewModel = remember { ConfigureSoundTriggerViewModel() }
+    val viewModel = remember { ConfigureSoundTriggerViewModel(triggerType) }
 
     var showChooseSoundsScreen by remember { mutableStateOf(false) }
 
