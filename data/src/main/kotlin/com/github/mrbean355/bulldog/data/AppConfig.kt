@@ -46,6 +46,8 @@ object AppConfig {
         }
     }
 
+    fun getStoragePath(): String = AppStorage.getRootPath()
+
     fun isTriggerEnabled(trigger: String): Boolean = lock.read {
         data.triggers[trigger]?.enabled ?: false
     }

@@ -36,6 +36,7 @@ import com.github.mrbean355.bulldog.data.AppConfig
 import com.github.mrbean355.bulldog.gsi.GameStateMonitor
 import com.github.mrbean355.bulldog.home.HomeScreen
 import com.github.mrbean355.bulldog.localization.getString
+import com.github.mrbean355.bulldog.settings.SettingsScreen
 import com.github.mrbean355.bulldog.sounds.ViewSoundTriggersScreen
 
 fun main() = application {
@@ -80,7 +81,7 @@ private enum class MainTab(
     Home(label = "home.tab.home", content = { HomeScreen() }),
     Sounds(label = "home.tab.sounds", content = { ViewSoundTriggersScreen() }),
     DiscordBot(label = "home.tab.discord", content = { Placeholder() }),
-    Settings(label = "home.tab.settings", content = { Placeholder() }),
+    Settings(label = "home.tab.settings", content = { SettingsScreen() }),
 }
 
 @Composable

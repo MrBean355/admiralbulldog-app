@@ -28,6 +28,8 @@ internal object AppStorage {
     private val appDataPath = getAppDataPath()
     private val appDirName = getAppDirName()
 
+    fun getRootPath(): String = getRoot().absolutePath
+
     fun getFile(name: String): File = File(getRoot(), name)
 
     private fun getRoot(): File {
