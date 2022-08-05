@@ -23,6 +23,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.util.UUID
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
@@ -75,12 +76,16 @@ object AppConfig {
         if (data.version > ConfigVersion) {
             error("Config file was modified by a newer app: ${data.version}")
         }
+        if (data.installationId.isEmpty()) {
+            data.installationId = UUID.randomUUID().toString()
+        }
         persist()
     }
 
     @Serializable
     private data class Data(
         val version: Int = ConfigVersion,
+        var installationId: String = "",
         val triggers: MutableMap<String, TriggerConfig> = mutableMapOf(),
     )
 
