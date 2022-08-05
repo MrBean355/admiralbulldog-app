@@ -32,6 +32,13 @@ internal object AppStorage {
 
     fun getFile(name: String): File = File(getRoot(), name)
 
+    fun getDirectory(name: String): File = File(getRoot(), name).also {
+        require(!it.exists() || it.isDirectory) {
+            "File must not exist, or be a directory: $name"
+        }
+        it.mkdirs()
+    }
+
     private fun getRoot(): File {
         val appData = File(appDataPath)
         require(appData.exists() && appData.isDirectory) {

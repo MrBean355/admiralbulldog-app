@@ -16,38 +16,12 @@
 
 package com.github.mrbean355.bulldog.data
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
-import java.io.File
-
 interface SoundBitesRepository {
 
     suspend fun getAllSoundBites(): List<SoundBite>
 
+    suspend fun synchroniseSoundBites(): Response<Unit>
+
 }
 
 fun SoundBitesRepository(): SoundBitesRepository = SoundBitesRepositoryImpl()
-
-private const val SoundsDir = "sounds"
-
-internal class SoundBitesRepositoryImpl : SoundBitesRepository {
-
-    override suspend fun getAllSoundBites() = withContext(Dispatchers.IO) {
-        mutex.withLock {
-            if (cache.isNotEmpty()) {
-                return@withLock cache
-            }
-
-            File(SoundsDir).listFiles().orEmpty()
-                .map { SoundBite(it.nameWithoutExtension, it.name) }
-                .also(cache::addAll)
-        }
-    }
-
-    companion object {
-        private val mutex = Mutex()
-        private val cache = mutableListOf<SoundBite>()
-    }
-}

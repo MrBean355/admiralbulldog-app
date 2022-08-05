@@ -18,6 +18,7 @@ package com.github.mrbean355.bulldog.data
 
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.ktor.util.reflect.TypeInfo
 import io.ktor.util.reflect.typeInfo
@@ -26,7 +27,7 @@ sealed interface Response<T> {
     val statusCode: Int
 
     data class Success<T>(
-        override val statusCode: Int,
+        override val statusCode: Int = HttpStatusCode.OK.value,
         val data: T
     ) : Response<T>
 
@@ -34,6 +35,14 @@ sealed interface Response<T> {
         override val statusCode: Int,
         val cause: Throwable? = null
     ) : Response<T>
+
+    companion object
+
+}
+
+@Suppress("FunctionName")
+fun Response.Companion.Success(statusCode: Int = HttpStatusCode.OK.value): Response.Success<Unit> {
+    return Response.Success(statusCode, Unit)
 }
 
 suspend inline fun <reified T> HttpResponse.toResponse(): Response<T> = toResponse(typeInfo<T>())
