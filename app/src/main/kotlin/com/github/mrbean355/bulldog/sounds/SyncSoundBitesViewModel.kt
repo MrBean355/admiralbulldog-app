@@ -16,6 +16,7 @@
 
 package com.github.mrbean355.bulldog.sounds
 
+import com.github.mrbean355.bulldog.data.AppConfig
 import com.github.mrbean355.bulldog.data.SoundBiteSyncState
 import com.github.mrbean355.bulldog.data.SoundBitesRepository
 import com.github.mrbean355.bulldog.localization.getString
@@ -65,7 +66,7 @@ class SyncSoundBitesViewModel(
                         _percentage.value = "${progress.formatPercentage()} %"
                     }
 
-                    is SoundBiteSyncState.Complete -> display(it)
+                    is SoundBiteSyncState.Complete -> handleCompletedResult(it)
                     SoundBiteSyncState.Error -> _showError.value = true
                 }
             }
@@ -76,7 +77,11 @@ class SyncSoundBitesViewModel(
         init()
     }
 
-    private suspend fun display(result: SoundBiteSyncState.Complete) = withContext(Dispatchers.Default) {
+    private suspend fun handleCompletedResult(result: SoundBiteSyncState.Complete) = withContext(Dispatchers.Default) {
+        if (result.failed.isEmpty()) {
+            AppConfig.setLastSyncTimeToNow()
+        }
+        _showRefresh.value = true
         _updatedSounds.value = buildList {
             if (result.added.isNotEmpty()) {
                 add(getString("sync.result.added", result.added.size))
@@ -98,7 +103,6 @@ class SyncSoundBitesViewModel(
                 add(getString("sync.result.latest"))
             }
         }
-        _showRefresh.value = true
     }
 
     private fun Float.formatPercentage(): Int {

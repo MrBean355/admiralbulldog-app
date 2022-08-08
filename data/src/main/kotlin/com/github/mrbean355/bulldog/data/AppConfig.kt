@@ -49,6 +49,15 @@ object AppConfig {
 
     fun getStoragePath(): String = AppStorage.getRootPath()
 
+    fun getLastSyncTime(): Long = lock.read {
+        data.lastSync
+    }
+
+    fun setLastSyncTimeToNow(): Unit = lock.write {
+        data.lastSync = System.currentTimeMillis()
+        persist()
+    }
+
     fun isTriggerEnabled(trigger: String): Boolean = lock.read {
         data.triggers[trigger]?.enabled ?: false
     }
@@ -85,6 +94,7 @@ object AppConfig {
     @Serializable
     private data class Data(
         val version: Int = ConfigVersion,
+        var lastSync: Long = 0L,
         var installationId: String = "",
         val triggers: MutableMap<String, TriggerConfig> = mutableMapOf(),
     )

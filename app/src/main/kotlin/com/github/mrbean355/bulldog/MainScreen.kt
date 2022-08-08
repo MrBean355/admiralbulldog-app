@@ -24,6 +24,7 @@ import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,10 +34,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.application
 import com.github.mrbean355.bulldog.components.AppWindow
 import com.github.mrbean355.bulldog.data.AppConfig
-import com.github.mrbean355.bulldog.gsi.GameStateMonitor
 import com.github.mrbean355.bulldog.home.HomeScreen
 import com.github.mrbean355.bulldog.localization.getString
 import com.github.mrbean355.bulldog.settings.SettingsScreen
+import com.github.mrbean355.bulldog.sounds.SyncSoundBitesScreen
 import com.github.mrbean355.bulldog.sounds.ViewSoundTriggersScreen
 
 fun main() = application {
@@ -69,8 +70,14 @@ fun main() = application {
         }
     }
 
+    val viewModel = remember { MainViewModel() }
+    val showSyncScreen by viewModel.showSyncScreen.collectAsState()
+    if (showSyncScreen) {
+        SyncSoundBitesScreen(onCloseRequest = viewModel::onSyncScreenClose)
+    }
+
     LaunchedEffect(Unit) {
-        GameStateMonitor.start()
+        viewModel.init()
     }
 }
 
