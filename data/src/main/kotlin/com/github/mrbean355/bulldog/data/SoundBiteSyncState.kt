@@ -16,14 +16,19 @@
 
 package com.github.mrbean355.bulldog.data
 
-import kotlinx.coroutines.flow.Flow
+sealed interface SoundBiteSyncState {
 
-interface SoundBitesRepository {
+    object Start : SoundBiteSyncState
 
-    suspend fun getAllSoundBites(): List<SoundBite>
+    class Progress(val complete: Int, val total: Int) : SoundBiteSyncState
 
-    fun synchroniseSoundBites(): Flow<SoundBiteSyncState>
+    class Complete(
+        val added: List<SoundBite>,
+        val changed: List<SoundBite>,
+        val deleted: List<String>,
+        val failed: List<String>,
+    ) : SoundBiteSyncState
+
+    object Error : SoundBiteSyncState
 
 }
-
-fun SoundBitesRepository(): SoundBitesRepository = SoundBitesRepositoryImpl()
