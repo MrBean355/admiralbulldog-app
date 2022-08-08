@@ -51,8 +51,17 @@ class ChooseSoundBitesViewModel(
 
     fun init() {
         viewModelScope.launch(Dispatchers.Default) {
-            _sounds.value = soundBitesRepository.getAllSoundBites().map(SoundBite::name).sorted()
-            AppConfig.getTriggerSounds(triggerType.configKey).forEach {
+            val selected = AppConfig.getTriggerSounds(triggerType.configKey)
+            _sounds.value = soundBitesRepository.getAllSoundBites().map(SoundBite::name).sortedWith { lhs, rhs ->
+                val lhsSelected = lhs in selected
+                val rhsSelected = rhs in selected
+                if (lhsSelected != rhsSelected) {
+                    if (lhsSelected) -1 else 1
+                } else {
+                    lhs compareTo rhs
+                }
+            }
+            selected.forEach {
                 checkedStates[it] = mutableStateOf(true)
             }
         }
