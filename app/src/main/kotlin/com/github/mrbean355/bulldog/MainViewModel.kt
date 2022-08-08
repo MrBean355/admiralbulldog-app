@@ -18,12 +18,16 @@ package com.github.mrbean355.bulldog
 
 import com.github.mrbean355.bulldog.data.AppConfig
 import com.github.mrbean355.bulldog.gsi.GameStateMonitor
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-class MainViewModel {
+class MainViewModel(
+    private val viewModelScope: CoroutineScope
+) {
     private val _showSyncScreen = MutableStateFlow(false)
 
     val showSyncScreen: StateFlow<Boolean> = _showSyncScreen.asStateFlow()
@@ -31,8 +35,10 @@ class MainViewModel {
     fun init() {
         GameStateMonitor.start()
 
-        val since = System.currentTimeMillis() - AppConfig.getLastSyncTime()
-        _showSyncScreen.value = since > TimeUnit.DAYS.toMillis(1)
+        viewModelScope.launch {
+            val since = System.currentTimeMillis() - AppConfig.getLastSyncTime()
+            _showSyncScreen.value = since > TimeUnit.DAYS.toMillis(1)
+        }
     }
 
     fun onSyncScreenClose() {

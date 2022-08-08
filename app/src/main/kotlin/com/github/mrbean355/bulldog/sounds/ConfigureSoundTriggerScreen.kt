@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.github.mrbean355.bulldog.components.AppWindow
+import com.github.mrbean355.bulldog.components.rememberViewModel
 import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
 import com.github.mrbean355.bulldog.gsi.triggers.description
 import com.github.mrbean355.bulldog.gsi.triggers.label
@@ -53,7 +54,9 @@ fun ConfigureSoundTriggerScreen(
     size = DpSize(400.dp, 600.dp),
     onCloseRequest = onCloseRequest
 ) {
-    val viewModel = remember { ConfigureSoundTriggerViewModel(triggerType) }
+    val viewModel = rememberViewModel { coroutineScope ->
+        ConfigureSoundTriggerViewModel(coroutineScope, triggerType)
+    }
 
     var showChooseSoundsScreen by remember { mutableStateOf(false) }
 

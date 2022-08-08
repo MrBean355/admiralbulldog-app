@@ -16,22 +16,23 @@
 
 package com.github.mrbean355.bulldog.data
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.util.UUID
-import java.util.concurrent.locks.ReentrantReadWriteLock
-import kotlin.concurrent.read
-import kotlin.concurrent.write
 
 private const val ConfigVersion = 1
 
 object AppConfig {
-    private val lock = ReentrantReadWriteLock()
+    private val mutex = Mutex()
     private val json = Json {
         encodeDefaults = true
         prettyPrint = true
@@ -40,38 +41,36 @@ object AppConfig {
     private lateinit var data: Data
 
     fun initAsync() {
-        GlobalScope.launch {
-            lock.write {
-                init()
-            }
+        GlobalScope.launch(Dispatchers.IO) {
+            init()
         }
     }
 
     fun getStoragePath(): String = AppStorage.getRootPath()
 
-    fun getLastSyncTime(): Long = lock.read {
+    suspend fun getLastSyncTime(): Long = mutex.withLock {
         data.lastSync
     }
 
-    fun setLastSyncTimeToNow(): Unit = lock.write {
+    suspend fun setLastSyncTimeToNow(): Unit = mutex.withLock {
         data.lastSync = System.currentTimeMillis()
         persist()
     }
 
-    fun isTriggerEnabled(trigger: String): Boolean = lock.read {
+    suspend fun isTriggerEnabled(trigger: String): Boolean = mutex.withLock {
         data.triggers[trigger]?.enabled ?: false
     }
 
-    fun setTriggerEnabled(trigger: String, enabled: Boolean): Unit = lock.write {
+    suspend fun setTriggerEnabled(trigger: String, enabled: Boolean): Unit = mutex.withLock {
         getTriggerConfig(trigger).enabled = enabled
         persist()
     }
 
-    fun getTriggerSounds(trigger: String): Collection<String> = lock.read {
+    suspend fun getTriggerSounds(trigger: String): Collection<String> = mutex.withLock {
         data.triggers[trigger]?.sounds?.toList().orEmpty()
     }
 
-    fun setTriggerSoundSelected(trigger: String, sound: String, enabled: Boolean) = lock.write {
+    suspend fun setTriggerSoundSelected(trigger: String, sound: String, enabled: Boolean) = mutex.withLock {
         val config = getTriggerConfig(trigger)
         if (enabled) config.sounds += sound else config.sounds -= sound
         persist()
@@ -81,11 +80,11 @@ object AppConfig {
         return data.triggers.getOrPut(trigger, ::TriggerConfig)
     }
 
-    private fun persist() {
+    private suspend fun persist() = withContext(Dispatchers.IO) {
         file.writeText(json.encodeToString(data))
     }
 
-    private fun init() {
+    private suspend fun init() = mutex.withLock {
         file = AppStorage.getFile("config.json")
         data = if (file.exists()) {
             json.decodeFromString(file.readText())

@@ -28,18 +28,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.mrbean355.bulldog.components.rememberViewModel
 
 @Composable
 fun HomeScreen() {
-    val scope = rememberCoroutineScope()
-    val viewModel = remember { HomeViewModel(scope) }
+    val viewModel = rememberViewModel { HomeViewModel(it) }
     val header by viewModel.header.collectAsState()
     val showProgressIndicator by viewModel.showProgressIndicator.collectAsState()
     val subHeader by viewModel.subHeader.collectAsState()

@@ -68,7 +68,9 @@ class ChooseSoundBitesViewModel(
 
     fun onCheckChange(sound: String, checked: Boolean) {
         getMutableState(sound).value = checked
-        AppConfig.setTriggerSoundSelected(triggerType.configKey, sound, checked)
+        viewModelScope.launch {
+            AppConfig.setTriggerSoundSelected(triggerType.configKey, sound, checked)
+        }
     }
 
     private fun getMutableState(sound: String): MutableState<Boolean> {

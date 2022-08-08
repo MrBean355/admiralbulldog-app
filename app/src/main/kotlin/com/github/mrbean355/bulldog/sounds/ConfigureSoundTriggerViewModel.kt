@@ -21,23 +21,31 @@ import androidx.compose.runtime.mutableStateOf
 import com.github.mrbean355.bulldog.data.AppConfig
 import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
 import com.github.mrbean355.bulldog.gsi.triggers.configKey
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 class ConfigureSoundTriggerViewModel(
+    private val viewModelScope: CoroutineScope,
     private val triggerType: SoundTriggerType
 ) {
-    private val _isEnabled = mutableStateOf(AppConfig.isTriggerEnabled(triggerType.configKey))
+    private val _isEnabled = mutableStateOf(false)
     private val _selectedSounds = mutableStateOf(0)
 
     val isEnabled: State<Boolean> = _isEnabled
     val selectedSounds: State<Int> = _selectedSounds
 
     fun init() {
+        viewModelScope.launch {
+            _isEnabled.value = AppConfig.isTriggerEnabled(triggerType.configKey)
+        }
         refreshSelectionCount()
     }
 
     fun onCheckChanged(value: Boolean) {
-        AppConfig.setTriggerEnabled(triggerType.configKey, value)
         _isEnabled.value = value
+        viewModelScope.launch {
+            AppConfig.setTriggerEnabled(triggerType.configKey, value)
+        }
     }
 
     fun onChooseSoundBitesWindowClose() {
@@ -45,6 +53,8 @@ class ConfigureSoundTriggerViewModel(
     }
 
     private fun refreshSelectionCount() {
-        _selectedSounds.value = AppConfig.getTriggerSounds(triggerType.configKey).size
+        viewModelScope.launch {
+            _selectedSounds.value = AppConfig.getTriggerSounds(triggerType.configKey).size
+        }
     }
 }

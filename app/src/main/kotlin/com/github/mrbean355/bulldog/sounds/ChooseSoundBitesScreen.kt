@@ -40,14 +40,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.github.mrbean355.bulldog.components.AppWindow
+import com.github.mrbean355.bulldog.components.rememberViewModel
 import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
 import com.github.mrbean355.bulldog.localization.getString
 
@@ -61,8 +60,7 @@ fun ChooseSoundBitesScreen(
     size = DpSize(400.dp, 800.dp),
     onCloseRequest = onCloseRequest
 ) {
-    val scope = rememberCoroutineScope()
-    val viewModel = remember { ChooseSoundBitesViewModel(scope, triggerType) }
+    val viewModel = rememberViewModel { ChooseSoundBitesViewModel(it, triggerType) }
     val sounds by viewModel.sounds.collectAsState(emptyList())
     val query by viewModel.query.collectAsState()
 
