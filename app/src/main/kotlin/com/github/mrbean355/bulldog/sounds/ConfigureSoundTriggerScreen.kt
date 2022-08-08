@@ -28,6 +28,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -102,7 +103,14 @@ fun ConfigureSoundTriggerScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.init()
+    }
+
     if (showChooseSoundsScreen) {
-        ChooseSoundBitesScreen(triggerType, onCloseRequest = { showChooseSoundsScreen = false })
+        ChooseSoundBitesScreen(triggerType, onCloseRequest = {
+            viewModel.onChooseSoundBitesWindowClose()
+            showChooseSoundsScreen = false
+        })
     }
 }

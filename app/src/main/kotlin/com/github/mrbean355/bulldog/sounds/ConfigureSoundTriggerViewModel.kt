@@ -25,15 +25,26 @@ import com.github.mrbean355.bulldog.gsi.triggers.configKey
 class ConfigureSoundTriggerViewModel(
     private val triggerType: SoundTriggerType
 ) {
-    // TODO: read from config:
     private val _isEnabled = mutableStateOf(AppConfig.isTriggerEnabled(triggerType.configKey))
     private val _selectedSounds = mutableStateOf(0)
 
     val isEnabled: State<Boolean> = _isEnabled
     val selectedSounds: State<Int> = _selectedSounds
 
+    fun init() {
+        refreshSelectionCount()
+    }
+
     fun onCheckChanged(value: Boolean) {
         AppConfig.setTriggerEnabled(triggerType.configKey, value)
         _isEnabled.value = value
+    }
+
+    fun onChooseSoundBitesWindowClose() {
+        refreshSelectionCount()
+    }
+
+    private fun refreshSelectionCount() {
+        _selectedSounds.value = AppConfig.getTriggerSounds(triggerType.configKey).size
     }
 }
