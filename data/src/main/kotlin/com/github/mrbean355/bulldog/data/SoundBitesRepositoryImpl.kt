@@ -43,7 +43,7 @@ internal class SoundBitesRepositoryImpl : SoundBitesRepository {
                 return@withLock cache
             }
 
-            File(SoundsDir).listFiles().orEmpty()
+            AppStorage.getDirectory(SoundsDir).listFiles().orEmpty()
                 .map { SoundBite(it.nameWithoutExtension, it.name) }
                 .also(cache::addAll)
         }
