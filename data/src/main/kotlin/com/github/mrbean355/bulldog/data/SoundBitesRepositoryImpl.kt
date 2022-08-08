@@ -44,7 +44,7 @@ internal class SoundBitesRepositoryImpl : SoundBitesRepository {
             }
 
             AppStorage.getDirectory(SoundsDir).listFiles().orEmpty()
-                .map { SoundBite(it.nameWithoutExtension, it.name) }
+                .map { SoundBite(it.nameWithoutExtension, it.absolutePath) }
                 .also(cache::addAll)
         }
     }
@@ -84,7 +84,7 @@ internal class SoundBitesRepositoryImpl : SoundBitesRepository {
                         val exists = target.exists()
                         if (!exists || !verifyChecksum(target, soundsResponse.data.getValue(sound))) {
                             if (BulldogService.downloadSoundBite(sound, target) is Response.Success) {
-                                (if (exists) changed else added) += SoundBite(sound.substringBeforeLast('.'), sound)
+                                (if (exists) changed else added) += SoundBite(sound.substringBeforeLast('.'), target.absolutePath)
                             } else {
                                 failed += sound
                             }

@@ -16,7 +16,7 @@
 
 package com.github.mrbean355.bulldog.data
 
-data class SoundBite(
+data class SoundBite internal constructor(
     val name: String,
-    val fileName: String,
+    val filePath: String,
 )
