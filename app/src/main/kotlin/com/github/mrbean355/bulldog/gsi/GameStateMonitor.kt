@@ -16,8 +16,11 @@
 
 package com.github.mrbean355.bulldog.gsi
 
+import com.github.mrbean355.bulldog.audio.SoundBitePlayer
+import com.github.mrbean355.bulldog.data.SoundBitesRepository
 import com.github.mrbean355.bulldog.gsi.triggers.SoundTrigger
 import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerTypes
+import com.github.mrbean355.bulldog.gsi.triggers.configKey
 import com.github.mrbean355.dota2.gamestate.PlayingGameState
 import com.github.mrbean355.dota2.server.GameStateServer
 import kotlinx.coroutines.GlobalScope
@@ -69,7 +72,11 @@ object GameStateMonitor {
     }
 
     private fun playSoundForType(soundTrigger: SoundTrigger) {
-        // TODO: pick random sound & play it
-        println("Play sound for ${soundTrigger::class.simpleName}")
+        GlobalScope.launch {
+            val choices = SoundBitesRepository().getSelectedSoundBites(soundTrigger::class.configKey)
+            if (choices.isNotEmpty()) {
+                SoundBitePlayer.play(choices.random())
+            }
+        }
     }
 }

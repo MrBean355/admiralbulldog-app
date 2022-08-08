@@ -49,6 +49,11 @@ internal class SoundBitesRepositoryImpl : SoundBitesRepository {
         }
     }
 
+    override suspend fun getSelectedSoundBites(triggerType: String) = withContext(Dispatchers.IO) {
+        val selected = AppConfig.getTriggerSounds(triggerType)
+        getAllSoundBites().filter { it.name in selected }
+    }
+
     override fun synchroniseSoundBites() = channelFlow {
         val soundsResponse = BulldogService.listSoundBites()
         if (soundsResponse !is Response.Success) {

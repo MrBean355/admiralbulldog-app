@@ -22,6 +22,8 @@ interface SoundBitesRepository {
 
     suspend fun getAllSoundBites(): List<SoundBite>
 
+    suspend fun getSelectedSoundBites(triggerType: String): List<SoundBite>
+
     fun synchroniseSoundBites(): Flow<SoundBiteSyncState>
 
 }
