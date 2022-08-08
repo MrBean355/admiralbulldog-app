@@ -19,7 +19,6 @@ package com.github.mrbean355.bulldog.sounds
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,7 +36,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -60,11 +58,11 @@ fun ChooseSoundBitesScreen(
     onCloseRequest: () -> Unit
 ) = AppWindow(
     title = getString("triggers.sounds.title"),
-    size = DpSize(400.dp, 600.dp),
+    size = DpSize(400.dp, 800.dp),
     onCloseRequest = onCloseRequest
 ) {
     val scope = rememberCoroutineScope()
-    val viewModel = remember { ChooseSoundBitesViewModel(scope) }
+    val viewModel = remember { ChooseSoundBitesViewModel(scope, triggerType) }
     val sounds by viewModel.sounds.collectAsState(emptyList())
     val query by viewModel.query.collectAsState()
 
@@ -81,15 +79,15 @@ fun ChooseSoundBitesScreen(
             val listState = rememberLazyListState()
 
             LazyColumn(state = listState) {
-                items(sounds) {
+                items(sounds) { sound ->
                     Row {
-                        Checkbox(false, {}, modifier = Modifier.padding(start = 8.dp))
+                        Checkbox(
+                            checked = viewModel.getSoundSelectionState(sound).value,
+                            onCheckedChange = { viewModel.onCheckChange(sound, it) },
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
                         ListItem {
-                            Text(it)
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
-                        IconButton(onClick = {}) {
-                            Icon(rememberVectorPainter(Icons.Default.PlayArrow), "")
+                            Text(sound)
                         }
                     }
                 }

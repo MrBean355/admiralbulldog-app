@@ -67,6 +67,16 @@ object AppConfig {
         persist()
     }
 
+    fun getTriggerSounds(trigger: String): Collection<String> = lock.read {
+        data.triggers[trigger]?.sounds?.toList().orEmpty()
+    }
+
+    fun setTriggerSoundSelected(trigger: String, sound: String, enabled: Boolean) = lock.write {
+        val config = getTriggerConfig(trigger)
+        if (enabled) config.sounds += sound else config.sounds -= sound
+        persist()
+    }
+
     private fun getTriggerConfig(trigger: String): TriggerConfig {
         return data.triggers.getOrPut(trigger, ::TriggerConfig)
     }
@@ -102,5 +112,6 @@ object AppConfig {
     @Serializable
     private data class TriggerConfig(
         var enabled: Boolean = false,
+        var sounds: Set<String> = emptySet(),
     )
 }

@@ -16,8 +16,14 @@
 
 package com.github.mrbean355.bulldog.sounds
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import com.github.mrbean355.bulldog.data.AppConfig
 import com.github.mrbean355.bulldog.data.SoundBite
 import com.github.mrbean355.bulldog.data.SoundBitesRepository
+import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
+import com.github.mrbean355.bulldog.gsi.triggers.configKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -28,9 +34,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class ChooseSoundBitesViewModel(
-    private val viewModelScope: CoroutineScope
+    private val viewModelScope: CoroutineScope,
+    private val triggerType: SoundTriggerType
 ) {
     private val soundBitesRepository = SoundBitesRepository()
+    private val checkedStates = mutableMapOf<String, MutableState<Boolean>>()
 
     private val _sounds = MutableStateFlow<List<String>>(emptyList())
     private val _query = MutableStateFlow("")
@@ -44,10 +52,26 @@ class ChooseSoundBitesViewModel(
     fun init() {
         viewModelScope.launch(Dispatchers.Default) {
             _sounds.value = soundBitesRepository.getAllSoundBites().map(SoundBite::name).sorted()
+            AppConfig.getTriggerSounds(triggerType.configKey).forEach {
+                checkedStates[it] = mutableStateOf(true)
+            }
         }
     }
 
     fun onSearchQueryChange(value: String) {
         _query.value = value
+    }
+
+    fun getSoundSelectionState(sound: String): State<Boolean> {
+        return getMutableState(sound)
+    }
+
+    fun onCheckChange(sound: String, checked: Boolean) {
+        getMutableState(sound).value = checked
+        AppConfig.setTriggerSoundSelected(triggerType.configKey, sound, checked)
+    }
+
+    private fun getMutableState(sound: String): MutableState<Boolean> {
+        return checkedStates.getOrPut(sound) { mutableStateOf(false) }
     }
 }
