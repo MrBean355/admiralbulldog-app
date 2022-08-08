@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -54,6 +55,7 @@ fun SyncSoundBitesScreen(
 
     val progress by viewModel.progress.collectAsState()
     val showError by viewModel.showError.collectAsState()
+    val showRefresh by viewModel.showRefresh.collectAsState()
     val counter by viewModel.counter.collectAsState()
     val percentage by viewModel.percentage.collectAsState()
     val items by viewModel.updatedSounds.collectAsState()
@@ -93,6 +95,14 @@ fun SyncSoundBitesScreen(
                     adapter = rememberScrollbarAdapter(listState),
                     modifier = Modifier.align(Alignment.CenterEnd)
                 )
+                if (showRefresh) {
+                    OutlinedButton(
+                        onClick = viewModel::onTryAgainClick,
+                        modifier = Modifier.align(Alignment.TopEnd).padding(end = 16.dp)
+                    ) {
+                        Text(text = getString("sync.result.refresh"))
+                    }
+                }
             }
         }
     }

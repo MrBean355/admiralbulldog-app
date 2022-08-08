@@ -35,12 +35,14 @@ class SyncSoundBitesViewModel(
 ) {
     private val _progress = MutableStateFlow(Float.NaN)
     private val _showError = MutableStateFlow(false)
+    private val _showRefresh = MutableStateFlow(false)
     private val _counter = MutableStateFlow("")
     private val _percentage = MutableStateFlow("")
     private val _updatedSounds = MutableStateFlow(emptyList<String>())
 
     val progress: StateFlow<Float> = _progress.asStateFlow()
     val showError: StateFlow<Boolean> = _showError.asStateFlow()
+    val showRefresh: StateFlow<Boolean> = _showRefresh.asStateFlow()
     val counter: StateFlow<String> = _counter.asStateFlow()
     val percentage: StateFlow<String> = _percentage.asStateFlow()
     val updatedSounds: StateFlow<List<String>> = _updatedSounds.asStateFlow()
@@ -48,6 +50,7 @@ class SyncSoundBitesViewModel(
     fun init() {
         _progress.value = Float.NaN
         _showError.value = false
+        _showRefresh.value = false
         _counter.value = ""
         _percentage.value = ""
         _updatedSounds.value = emptyList()
@@ -95,6 +98,7 @@ class SyncSoundBitesViewModel(
                 add(getString("sync.result.latest"))
             }
         }
+        _showRefresh.value = true
     }
 
     private fun Float.formatPercentage(): Int {
