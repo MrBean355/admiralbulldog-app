@@ -50,8 +50,6 @@ internal class SoundBitesRepositoryImpl : SoundBitesRepository {
     }
 
     override fun synchroniseSoundBites() = channelFlow {
-        send(SoundBiteSyncState.Start)
-
         val soundsResponse = BulldogService.listSoundBites()
         if (soundsResponse !is Response.Success) {
             send(SoundBiteSyncState.Error)

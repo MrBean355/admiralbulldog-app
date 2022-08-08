@@ -18,8 +18,6 @@ package com.github.mrbean355.bulldog.data
 
 sealed interface SoundBiteSyncState {
 
-    object Start : SoundBiteSyncState
-
     class Progress(val complete: Int, val total: Int) : SoundBiteSyncState
 
     class Complete(

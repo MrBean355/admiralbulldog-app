@@ -34,26 +34,27 @@ class SyncSoundBitesViewModel(
     private val soundBitesRepository: SoundBitesRepository = SoundBitesRepository()
 ) {
     private val _progress = MutableStateFlow(Float.NaN)
+    private val _showError = MutableStateFlow(false)
     private val _counter = MutableStateFlow("")
     private val _percentage = MutableStateFlow("")
     private val _updatedSounds = MutableStateFlow(emptyList<String>())
 
     val progress: StateFlow<Float> = _progress.asStateFlow()
+    val showError: StateFlow<Boolean> = _showError.asStateFlow()
     val counter: StateFlow<String> = _counter.asStateFlow()
     val percentage: StateFlow<String> = _percentage.asStateFlow()
     val updatedSounds: StateFlow<List<String>> = _updatedSounds.asStateFlow()
 
     fun init() {
+        _progress.value = Float.NaN
+        _showError.value = false
+        _counter.value = ""
+        _percentage.value = ""
+        _updatedSounds.value = emptyList()
+
         viewModelScope.launch {
             soundBitesRepository.synchroniseSoundBites().collect {
                 when (it) {
-                    SoundBiteSyncState.Start -> {
-                        _progress.value = Float.NaN
-                        _counter.value = ""
-                        _percentage.value = ""
-                        _updatedSounds.value = emptyList()
-                    }
-
                     is SoundBiteSyncState.Progress -> {
                         val progress = it.complete / it.total.toFloat()
                         _progress.value = progress
@@ -62,12 +63,14 @@ class SyncSoundBitesViewModel(
                     }
 
                     is SoundBiteSyncState.Complete -> display(it)
-                    SoundBiteSyncState.Error -> {
-                        // TODO
-                    }
+                    SoundBiteSyncState.Error -> _showError.value = true
                 }
             }
         }
+    }
+
+    fun onTryAgainClick() {
+        init()
     }
 
     private suspend fun display(result: SoundBiteSyncState.Complete) = withContext(Dispatchers.Default) {

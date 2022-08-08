@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.github.mrbean355.bulldog.components.AppWindow
+import com.github.mrbean355.bulldog.components.ErrorView
 import com.github.mrbean355.bulldog.localization.getString
 
 @Composable
@@ -50,7 +51,9 @@ fun SyncSoundBitesScreen(
 ) {
     val scope = rememberCoroutineScope()
     val viewModel = remember { SyncSoundBitesViewModel(scope) }
+
     val progress by viewModel.progress.collectAsState()
+    val showError by viewModel.showError.collectAsState()
     val counter by viewModel.counter.collectAsState()
     val percentage by viewModel.percentage.collectAsState()
     val items by viewModel.updatedSounds.collectAsState()
@@ -69,6 +72,12 @@ fun SyncSoundBitesScreen(
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(text = counter)
                 Text(text = percentage, modifier = Modifier.align(Alignment.TopEnd))
+            }
+            if (showError) {
+                ErrorView(
+                    onTryAgainClick = viewModel::onTryAgainClick,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
             }
             Box {
                 val listState = rememberLazyListState()
