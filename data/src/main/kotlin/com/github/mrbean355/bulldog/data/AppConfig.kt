@@ -48,6 +48,10 @@ object AppConfig {
 
     fun getStoragePath(): String = AppStorage.getRootPath()
 
+    suspend fun getDotaPath(): String = mutex.withLock {
+        data.dotaPath
+    }
+
     suspend fun getLastSyncTime(): Long = mutex.withLock {
         data.lastSync
     }
@@ -103,6 +107,7 @@ object AppConfig {
     @Serializable
     private data class Data(
         val version: Int = ConfigVersion,
+        var dotaPath: String = "",
         var lastSync: Long = 0L,
         var installationId: String = "",
         val triggers: MutableMap<String, TriggerConfig> = mutableMapOf(),

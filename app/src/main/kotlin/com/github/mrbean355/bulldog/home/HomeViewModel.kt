@@ -16,10 +16,13 @@
 
 package com.github.mrbean355.bulldog.home
 
+import com.github.mrbean355.bulldog.gsi.Dota2
 import com.github.mrbean355.bulldog.gsi.GameStateMonitor
 import com.github.mrbean355.bulldog.localization.getString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -27,16 +30,24 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val viewModelScope: CoroutineScope
 ) {
+    private val _showInstall = MutableStateFlow(false)
+
+    val showInstall: StateFlow<Boolean> = _showInstall.asStateFlow()
     val header = MutableStateFlow(getString("home.header.waiting"))
     val showProgressIndicator = MutableStateFlow(true)
     val subHeader = MutableStateFlow(getString("home.subheader.waiting"))
 
     fun init() {
         viewModelScope.launch {
-            GameStateMonitor.getLatestState().filterNotNull().first()
-            header.value = getString("home.header.connected")
-            showProgressIndicator.value = false
-            subHeader.value = getString("home.subheader.connected")
+            val installed = Dota2.isValidPathSaved()
+            _showInstall.value = !installed
+            if (installed) {
+                Dota2.installGameStateIntegration()
+                GameStateMonitor.getLatestState().filterNotNull().first()
+                header.value = getString("home.header.connected")
+                showProgressIndicator.value = false
+                subHeader.value = getString("home.subheader.connected")
+            }
         }
     }
 }
