@@ -52,36 +52,42 @@ object AppConfig {
         data.dotaPath
     }
 
+    suspend fun setDotaPath(path: String) = update {
+        data.dotaPath = path
+    }
+
     suspend fun getLastSyncTime(): Long = mutex.withLock {
         data.lastSync
     }
 
-    suspend fun setLastSyncTimeToNow(): Unit = mutex.withLock {
+    suspend fun setLastSyncTimeToNow() = update {
         data.lastSync = System.currentTimeMillis()
-        persist()
     }
 
     suspend fun isTriggerEnabled(trigger: String): Boolean = mutex.withLock {
         data.triggers[trigger]?.enabled ?: false
     }
 
-    suspend fun setTriggerEnabled(trigger: String, enabled: Boolean): Unit = mutex.withLock {
+    suspend fun setTriggerEnabled(trigger: String, enabled: Boolean) = update {
         getTriggerConfig(trigger).enabled = enabled
-        persist()
     }
 
     suspend fun getTriggerSounds(trigger: String): Collection<String> = mutex.withLock {
         data.triggers[trigger]?.sounds?.toList().orEmpty()
     }
 
-    suspend fun setTriggerSoundSelected(trigger: String, sound: String, enabled: Boolean) = mutex.withLock {
+    suspend fun setTriggerSoundSelected(trigger: String, sound: String, enabled: Boolean) = update {
         val config = getTriggerConfig(trigger)
         if (enabled) config.sounds += sound else config.sounds -= sound
-        persist()
     }
 
     private fun getTriggerConfig(trigger: String): TriggerConfig {
         return data.triggers.getOrPut(trigger, ::TriggerConfig)
+    }
+
+    private suspend fun update(block: () -> Unit): Unit = mutex.withLock {
+        block()
+        persist()
     }
 
     private suspend fun persist() = withContext(Dispatchers.IO) {
