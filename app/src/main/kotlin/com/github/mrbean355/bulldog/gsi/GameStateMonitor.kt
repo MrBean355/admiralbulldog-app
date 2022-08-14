@@ -17,13 +17,16 @@
 package com.github.mrbean355.bulldog.gsi
 
 import com.github.mrbean355.bulldog.audio.SoundBitePlayer
+import com.github.mrbean355.bulldog.data.AppConfig
 import com.github.mrbean355.bulldog.data.SoundBitesRepository
 import com.github.mrbean355.bulldog.gsi.triggers.SoundTrigger
 import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerTypes
 import com.github.mrbean355.bulldog.gsi.triggers.configKey
 import com.github.mrbean355.dota2.gamestate.PlayingGameState
 import com.github.mrbean355.dota2.server.GameStateServer
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,6 +34,8 @@ import kotlinx.coroutines.launch
 import kotlin.reflect.full.createInstance
 
 object GameStateMonitor {
+    private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val soundBitesRepository = SoundBitesRepository()
     private val latestState = MutableStateFlow<PlayingGameState?>(null)
     private val soundTriggers = mutableListOf<SoundTrigger>()
     private var previousState: PlayingGameState? = null
@@ -38,7 +43,7 @@ object GameStateMonitor {
     fun getLatestState(): StateFlow<PlayingGameState?> = latestState.asStateFlow()
 
     fun start() {
-        GlobalScope.launch {
+        coroutineScope.launch {
             GameStateServer(12345 /* TODO: ConfigPersistence.getPort() */)
                 .setPlayingListener {
                     processGameState(it)
@@ -62,21 +67,20 @@ object GameStateMonitor {
         // Play sound bites that want to be played:
         val localPreviousState = previousState
         if (localPreviousState != null && currentState.map?.isPaused == false) {
-            soundTriggers
-                // TODO: .filter { ConfigPersistence.isSoundTriggerEnabled(it::class) }
-                .filter { it.shouldPlay(localPreviousState, currentState) }
-                // TODO: .filter { it.doesProc(localPreviousState, currentState) }
-                .forEach { playSoundForType(it) }
+            coroutineScope.launch {
+                soundTriggers.forEach {
+                    it.process(localPreviousState, currentState)
+                }
+            }
         }
         previousState = currentState
     }
 
-    private fun playSoundForType(soundTrigger: SoundTrigger) {
-        GlobalScope.launch {
-            val choices = SoundBitesRepository().getSelectedSoundBites(soundTrigger::class.configKey)
-            if (choices.isNotEmpty()) {
-                SoundBitePlayer.play(choices.random())
-            }
+    private suspend fun SoundTrigger.process(previousState: PlayingGameState, currentState: PlayingGameState) {
+        if (AppConfig.isTriggerEnabled(configKey) && shouldPlay(previousState, currentState)) {
+            soundBitesRepository.getSelectedSoundBites(configKey)
+                .randomOrNull()
+                ?.run(SoundBitePlayer::play)
         }
     }
 }
