@@ -25,6 +25,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Slider
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +45,7 @@ import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
 import com.github.mrbean355.bulldog.gsi.triggers.description
 import com.github.mrbean355.bulldog.gsi.triggers.label
 import com.github.mrbean355.bulldog.localization.getString
+import kotlin.math.roundToInt
 
 @Composable
 fun ConfigureSoundTriggerScreen(
@@ -86,6 +88,16 @@ fun ConfigureSoundTriggerScreen(
                 Spacer(modifier = Modifier.weight(1f))
                 Switch(checked = viewModel.isEnabled.value, onCheckedChange = viewModel::onCheckChanged)
             }
+
+            // Field: chance
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = getString("triggers.configure.chance"))
+                Spacer(modifier = Modifier.weight(1f))
+                Text(text = "${viewModel.chance.value.roundToInt()} %")
+            }
+            Slider(viewModel.chance.value, viewModel::onChanceChanged, valueRange = 0f..100f)
 
             // Field: sound bites
             Row(

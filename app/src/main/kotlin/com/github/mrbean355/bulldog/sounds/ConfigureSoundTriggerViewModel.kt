@@ -23,20 +23,24 @@ import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
 import com.github.mrbean355.bulldog.gsi.triggers.configKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlin.math.ceil
 
 class ConfigureSoundTriggerViewModel(
     private val viewModelScope: CoroutineScope,
     private val triggerType: SoundTriggerType
 ) {
     private val _isEnabled = mutableStateOf(false)
+    private val _chance = mutableStateOf(0f)
     private val _selectedSounds = mutableStateOf(0)
 
     val isEnabled: State<Boolean> = _isEnabled
+    val chance: State<Float> = _chance
     val selectedSounds: State<Int> = _selectedSounds
 
     fun init() {
         viewModelScope.launch {
             _isEnabled.value = AppConfig.isTriggerEnabled(triggerType.configKey)
+            _chance.value = AppConfig.getTriggerChance(triggerType.configKey)
         }
         refreshSelectionCount()
     }
@@ -45,6 +49,13 @@ class ConfigureSoundTriggerViewModel(
         _isEnabled.value = value
         viewModelScope.launch {
             AppConfig.setTriggerEnabled(triggerType.configKey, value)
+        }
+    }
+
+    fun onChanceChanged(value: Float) {
+        _chance.value = ceil(value)
+        viewModelScope.launch {
+            AppConfig.setTriggerChance(triggerType.configKey, chance.value)
         }
     }
 

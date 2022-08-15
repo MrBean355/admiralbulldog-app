@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 import kotlin.reflect.full.createInstance
 
 object GameStateMonitor {
@@ -77,7 +78,10 @@ object GameStateMonitor {
     }
 
     private suspend fun SoundTrigger.process(previousState: PlayingGameState, currentState: PlayingGameState) {
-        if (AppConfig.isTriggerEnabled(configKey) && shouldPlay(previousState, currentState)) {
+        if (AppConfig.isTriggerEnabled(configKey)
+            && Random.nextFloat() <= AppConfig.getTriggerChance(configKey) / 100f
+            && shouldPlay(previousState, currentState)
+        ) {
             soundBitesRepository.getSelectedSoundBites(configKey)
                 .randomOrNull()
                 ?.run(SoundBitePlayer::play)

@@ -65,15 +65,23 @@ object AppConfig {
     }
 
     suspend fun isTriggerEnabled(trigger: String): Boolean = mutex.withLock {
-        data.triggers[trigger]?.enabled ?: false
+        getTriggerConfig(trigger).enabled
     }
 
     suspend fun setTriggerEnabled(trigger: String, enabled: Boolean) = update {
         getTriggerConfig(trigger).enabled = enabled
     }
 
+    suspend fun getTriggerChance(trigger: String): Float = mutex.withLock {
+        getTriggerConfig(trigger).chance
+    }
+
+    suspend fun setTriggerChance(trigger: String, chance: Float) = update {
+        getTriggerConfig(trigger).chance = chance
+    }
+
     suspend fun getTriggerSounds(trigger: String): Collection<String> = mutex.withLock {
-        data.triggers[trigger]?.sounds?.toList().orEmpty()
+        getTriggerConfig(trigger).sounds.toList()
     }
 
     suspend fun setTriggerSoundSelected(trigger: String, sound: String, enabled: Boolean) = update {
@@ -122,6 +130,7 @@ object AppConfig {
     @Serializable
     private data class TriggerConfig(
         var enabled: Boolean = false,
+        var chance: Float = 100f,
         var sounds: Set<String> = emptySet(),
     )
 }
