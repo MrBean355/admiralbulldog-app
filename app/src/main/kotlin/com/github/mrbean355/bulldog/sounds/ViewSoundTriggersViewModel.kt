@@ -16,28 +16,41 @@
 
 package com.github.mrbean355.bulldog.sounds
 
+import com.github.mrbean355.bulldog.data.AppConfig
 import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
 import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerTypes
-import com.github.mrbean355.bulldog.gsi.triggers.description
+import com.github.mrbean355.bulldog.gsi.triggers.configKey
 import com.github.mrbean355.bulldog.gsi.triggers.label
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-class ViewSoundTriggersViewModel {
+class ViewSoundTriggersViewModel(
+    private val viewModelScope: CoroutineScope
+) {
     private val _items = MutableStateFlow<List<Item>>(emptyList())
 
     val items: StateFlow<List<Item>> = _items.asStateFlow()
 
     fun init() {
-        _items.value = SoundTriggerTypes.map {
-            Item(it, it.label, it.description)
+        viewModelScope.launch {
+            _items.value = SoundTriggerTypes.map { triggerType ->
+                val enabled = AppConfig.isTriggerEnabled(triggerType.configKey)
+                        && AppConfig.getTriggerSounds(triggerType.configKey).isNotEmpty()
+                Item(triggerType, triggerType.label, enabled)
+            }
         }
+    }
+
+    fun onConfigureScreenClose() {
+        init()
     }
 
     data class Item(
         val type: SoundTriggerType,
         val label: String,
-        val subLabel: String
+        val enabled: Boolean,
     )
 }

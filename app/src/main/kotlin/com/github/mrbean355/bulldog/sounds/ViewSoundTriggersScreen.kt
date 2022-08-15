@@ -38,13 +38,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
+import com.github.mrbean355.bulldog.components.rememberViewModel
 import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
 
 @Composable
 @OptIn(ExperimentalMaterialApi::class)
 fun ViewSoundTriggersScreen() {
-    val viewModel = remember { ViewSoundTriggersViewModel() }
+    val viewModel = rememberViewModel(::ViewSoundTriggersViewModel)
     val items by viewModel.items.collectAsState()
     val listState = rememberLazyListState()
 
@@ -60,8 +62,9 @@ fun ViewSoundTriggersScreen() {
             items(items) { item ->
                 ListItem(
                     text = { Text(text = item.label) },
-                    secondaryText = { Text(text = item.subLabel) },
-                    modifier = Modifier.clickable { clickedItem = item.type }
+                    modifier = Modifier
+                        .clickable { clickedItem = item.type }
+                        .alpha(if (item.enabled) 1f else 0.5f)
                 )
             }
         }
@@ -78,6 +81,9 @@ fun ViewSoundTriggersScreen() {
     }
 
     clickedItem?.let {
-        ConfigureSoundTriggerScreen(it, onCloseRequest = { clickedItem = null })
+        ConfigureSoundTriggerScreen(it, onCloseRequest = {
+            viewModel.onConfigureScreenClose()
+            clickedItem = null
+        })
     }
 }
