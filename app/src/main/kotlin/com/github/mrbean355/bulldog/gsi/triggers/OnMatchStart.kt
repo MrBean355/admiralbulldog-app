@@ -20,7 +20,7 @@ import com.github.mrbean355.dota2.gamestate.PlayingGameState
 import com.github.mrbean355.dota2.map.MatchState
 
 /** Plays a sound just after the clock hits 0. */
-class OnMatchStart : SoundTrigger {
+object OnMatchStart : SoundTrigger {
     private var played = false
 
     override fun shouldPlay(previous: PlayingGameState, current: PlayingGameState): Boolean {
@@ -31,5 +31,9 @@ class OnMatchStart : SoundTrigger {
             return true
         }
         return false
+    }
+
+    override fun reset() {
+        played = false
     }
 }

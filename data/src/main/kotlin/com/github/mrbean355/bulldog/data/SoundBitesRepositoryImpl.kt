@@ -49,8 +49,8 @@ internal class SoundBitesRepositoryImpl : SoundBitesRepository {
         }
     }
 
-    override suspend fun getSelectedSoundBites(triggerType: String) = withContext(Dispatchers.IO) {
-        val selected = AppConfig.getTriggerSounds(triggerType)
+    override suspend fun getSelectedSoundBites(soundTrigger: String) = withContext(Dispatchers.IO) {
+        val selected = AppConfig.getTriggerSounds(soundTrigger)
         getAllSoundBites().filter { it.name in selected }
     }
 

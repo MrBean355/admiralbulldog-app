@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.github.mrbean355.bulldog.components.AppWindow
 import com.github.mrbean355.bulldog.components.rememberViewModel
-import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
+import com.github.mrbean355.bulldog.gsi.triggers.SoundTrigger
 import com.github.mrbean355.bulldog.gsi.triggers.description
 import com.github.mrbean355.bulldog.gsi.triggers.label
 import com.github.mrbean355.bulldog.localization.getString
@@ -49,7 +49,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun ConfigureSoundTriggerScreen(
-    triggerType: SoundTriggerType,
+    soundTrigger: SoundTrigger,
     onCloseRequest: () -> Unit
 ) = AppWindow(
     title = getString("triggers.configure.title"),
@@ -57,7 +57,7 @@ fun ConfigureSoundTriggerScreen(
     onCloseRequest = onCloseRequest
 ) {
     val viewModel = rememberViewModel { coroutineScope ->
-        ConfigureSoundTriggerViewModel(coroutineScope, triggerType)
+        ConfigureSoundTriggerViewModel(coroutineScope, soundTrigger)
     }
 
     var showChooseSoundsScreen by remember { mutableStateOf(false) }
@@ -68,12 +68,12 @@ fun ConfigureSoundTriggerScreen(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = triggerType.label,
+                text = soundTrigger.label,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Text(
-                text = triggerType.description,
+                text = soundTrigger.description,
                 style = MaterialTheme.typography.body2,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -123,7 +123,7 @@ fun ConfigureSoundTriggerScreen(
     }
 
     if (showChooseSoundsScreen) {
-        ChooseSoundBitesScreen(triggerType, onCloseRequest = {
+        ChooseSoundBitesScreen(soundTrigger, onCloseRequest = {
             viewModel.onChooseSoundBitesWindowClose()
             showChooseSoundsScreen = false
         })

@@ -24,7 +24,7 @@ import kotlin.math.ceil
 private const val HOW_OFTEN = 3 * 60
 
 /** Plays a sound shortly before the bounty runes spawn. */
-class OnBountyRunesSpawn : SoundTrigger {
+object OnBountyRunesSpawn : SoundTrigger {
     /** Play a sound this many seconds before the bounty runes spawn. */
     private val warningPeriod = 15 // TODO: ConfigPersistence.getBountyRuneTimer()
     private var nextPlayTime = Uninitialized
@@ -47,6 +47,10 @@ class OnBountyRunesSpawn : SoundTrigger {
             }
         }
         return false
+    }
+
+    override fun reset() {
+        nextPlayTime = Uninitialized
     }
 
     private fun findNextPlayTime(clockTime: Int): Int {

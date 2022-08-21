@@ -41,7 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import com.github.mrbean355.bulldog.components.rememberViewModel
-import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
+import com.github.mrbean355.bulldog.gsi.triggers.SoundTrigger
 
 @Composable
 @OptIn(ExperimentalMaterialApi::class)
@@ -50,7 +50,7 @@ fun ViewSoundTriggersScreen() {
     val items by viewModel.items.collectAsState()
     val listState = rememberLazyListState()
 
-    var clickedItem by remember { mutableStateOf<SoundTriggerType?>(null) }
+    var clickedItem by remember { mutableStateOf<SoundTrigger?>(null) }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -63,7 +63,7 @@ fun ViewSoundTriggersScreen() {
                 ListItem(
                     text = { Text(text = item.label) },
                     modifier = Modifier
-                        .clickable { clickedItem = item.type }
+                        .clickable { clickedItem = item.trigger }
                         .alpha(if (item.enabled) 1f else 0.5f)
                 )
             }

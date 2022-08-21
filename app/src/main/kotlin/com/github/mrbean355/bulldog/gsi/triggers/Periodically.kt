@@ -19,7 +19,7 @@ package com.github.mrbean355.bulldog.gsi.triggers
 import com.github.mrbean355.dota2.gamestate.PlayingGameState
 import kotlin.random.Random
 
-class Periodically : SoundTrigger {
+object Periodically : SoundTrigger {
     private var nextPlayClockTime = Uninitialized
 
     override fun shouldPlay(previous: PlayingGameState, current: PlayingGameState): Boolean {
@@ -32,6 +32,10 @@ class Periodically : SoundTrigger {
             return true
         }
         return false
+    }
+
+    override fun reset() {
+        nextPlayClockTime = Uninitialized
     }
 
     private fun randomiseDelay(): Int {

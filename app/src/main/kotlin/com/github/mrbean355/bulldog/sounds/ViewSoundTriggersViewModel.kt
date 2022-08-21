@@ -17,8 +17,8 @@
 package com.github.mrbean355.bulldog.sounds
 
 import com.github.mrbean355.bulldog.data.AppConfig
-import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
-import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerTypes
+import com.github.mrbean355.bulldog.gsi.triggers.SoundTrigger
+import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggers
 import com.github.mrbean355.bulldog.gsi.triggers.configKey
 import com.github.mrbean355.bulldog.gsi.triggers.label
 import kotlinx.coroutines.CoroutineScope
@@ -36,10 +36,10 @@ class ViewSoundTriggersViewModel(
 
     fun init() {
         viewModelScope.launch {
-            _items.value = SoundTriggerTypes.map { triggerType ->
-                val enabled = AppConfig.isTriggerEnabled(triggerType.configKey)
-                        && AppConfig.getTriggerSounds(triggerType.configKey).isNotEmpty()
-                Item(triggerType, triggerType.label, enabled)
+            _items.value = SoundTriggers.map { trigger ->
+                val enabled = AppConfig.isTriggerEnabled(trigger.configKey)
+                        && AppConfig.getTriggerSounds(trigger.configKey).isNotEmpty()
+                Item(trigger, trigger.label, enabled)
             }
         }
     }
@@ -49,7 +49,7 @@ class ViewSoundTriggersViewModel(
     }
 
     data class Item(
-        val type: SoundTriggerType,
+        val trigger: SoundTrigger,
         val label: String,
         val enabled: Boolean,
     )

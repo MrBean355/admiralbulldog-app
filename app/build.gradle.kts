@@ -25,7 +25,6 @@ compose.desktop {
 
 dependencies {
     implementation(project(":data"))
-    implementation(kotlin("reflect"))
     implementation(compose.desktop.currentOs)
     implementation("com.github.mrbean355:dota2-gsi:2.1.0")
     implementation("uk.co.caprica:vlcj:4.7.3")

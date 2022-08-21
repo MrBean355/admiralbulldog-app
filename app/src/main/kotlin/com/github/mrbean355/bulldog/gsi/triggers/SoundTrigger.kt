@@ -18,23 +18,20 @@ package com.github.mrbean355.bulldog.gsi.triggers
 
 import com.github.mrbean355.bulldog.localization.getString
 import com.github.mrbean355.dota2.gamestate.PlayingGameState
-import kotlin.reflect.KClass
 
-val SoundTriggerTypes: Set<SoundTriggerType> = setOf(
-    OnBountyRunesSpawn::class,
-    OnKill::class,
-    OnDeath::class,
-    OnRespawn::class,
-    OnHeal::class,
-    OnSmoked::class,
-    OnMidasReady::class,
-    OnMatchStart::class,
-    OnVictory::class,
-    OnDefeat::class,
-    Periodically::class
+val SoundTriggers: Set<SoundTrigger> = setOf(
+    OnBountyRunesSpawn,
+    OnKill,
+    OnDeath,
+    OnRespawn,
+    OnHeal,
+    OnSmoked,
+    OnMidasReady,
+    OnMatchStart,
+    OnVictory,
+    OnDefeat,
+    Periodically
 )
-
-typealias SoundTriggerType = KClass<out SoundTrigger>
 
 const val Uninitialized: Int = -1
 
@@ -43,36 +40,42 @@ interface SoundTrigger {
     /** Examine the states and decide if a sound should be played. */
     fun shouldPlay(previous: PlayingGameState, current: PlayingGameState): Boolean
 
+    /** Reset any state being managed. */
+    fun reset(): Unit = Unit
+
 }
 
-val SoundTriggerType.label: String
+val SoundTrigger.configKey: String
+    get() = requireNotNull(this::class.simpleName)
+
+val SoundTrigger.label: String
     get() = when (this) {
-        OnBountyRunesSpawn::class -> getString("trigger_name_bounty_runes")
-        OnDeath::class -> getString("trigger_name_death")
-        OnDefeat::class -> getString("trigger_name_defeat")
-        OnHeal::class -> getString("trigger_name_heal")
-        OnKill::class -> getString("trigger_name_kill")
-        OnMatchStart::class -> getString("trigger_name_match_start")
-        OnMidasReady::class -> getString("trigger_name_midas_ready")
-        OnRespawn::class -> getString("trigger_name_respawn")
-        OnSmoked::class -> getString("trigger_name_smoked")
-        OnVictory::class -> getString("trigger_name_victory")
-        Periodically::class -> getString("trigger_name_periodically")
-        else -> throw IllegalArgumentException("Unexpected type: $this")
+        OnBountyRunesSpawn -> getString("trigger_name_bounty_runes")
+        OnDeath -> getString("trigger_name_death")
+        OnDefeat -> getString("trigger_name_defeat")
+        OnHeal -> getString("trigger_name_heal")
+        OnKill -> getString("trigger_name_kill")
+        OnMatchStart -> getString("trigger_name_match_start")
+        OnMidasReady -> getString("trigger_name_midas_ready")
+        OnRespawn -> getString("trigger_name_respawn")
+        OnSmoked -> getString("trigger_name_smoked")
+        OnVictory -> getString("trigger_name_victory")
+        Periodically -> getString("trigger_name_periodically")
+        else -> throw IllegalArgumentException("Unexpected trigger: $this")
     }
 
-val SoundTriggerType.description: String
+val SoundTrigger.description: String
     get() = when (this) {
-        OnBountyRunesSpawn::class -> getString("trigger_desc_bounty_runes")
-        OnDeath::class -> getString("trigger_desc_death")
-        OnDefeat::class -> getString("trigger_desc_defeat")
-        OnHeal::class -> getString("trigger_desc_heal")
-        OnKill::class -> getString("trigger_desc_kill")
-        OnMatchStart::class -> getString("trigger_desc_match_start")
-        OnMidasReady::class -> getString("trigger_desc_midas_ready")
-        OnRespawn::class -> getString("trigger_desc_respawn")
-        OnSmoked::class -> getString("trigger_desc_smoked")
-        OnVictory::class -> getString("trigger_desc_victory")
-        Periodically::class -> getString("trigger_desc_periodically")
-        else -> throw IllegalArgumentException("Unexpected type: $this")
+        OnBountyRunesSpawn -> getString("trigger_desc_bounty_runes")
+        OnDeath -> getString("trigger_desc_death")
+        OnDefeat -> getString("trigger_desc_defeat")
+        OnHeal -> getString("trigger_desc_heal")
+        OnKill -> getString("trigger_desc_kill")
+        OnMatchStart -> getString("trigger_desc_match_start")
+        OnMidasReady -> getString("trigger_desc_midas_ready")
+        OnRespawn -> getString("trigger_desc_respawn")
+        OnSmoked -> getString("trigger_desc_smoked")
+        OnVictory -> getString("trigger_desc_victory")
+        Periodically -> getString("trigger_desc_periodically")
+        else -> throw IllegalArgumentException("Unexpected trigger: $this")
     }

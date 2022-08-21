@@ -22,7 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.github.mrbean355.bulldog.data.AppConfig
 import com.github.mrbean355.bulldog.data.SoundBite
 import com.github.mrbean355.bulldog.data.SoundBitesRepository
-import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
+import com.github.mrbean355.bulldog.gsi.triggers.SoundTrigger
 import com.github.mrbean355.bulldog.gsi.triggers.configKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 
 class ChooseSoundBitesViewModel(
     private val viewModelScope: CoroutineScope,
-    private val triggerType: SoundTriggerType
+    private val soundTrigger: SoundTrigger
 ) {
     private val soundBitesRepository = SoundBitesRepository()
     private val checkedStates = mutableMapOf<String, MutableState<Boolean>>()
@@ -51,7 +51,7 @@ class ChooseSoundBitesViewModel(
 
     fun init() {
         viewModelScope.launch(Dispatchers.Default) {
-            val selected = AppConfig.getTriggerSounds(triggerType.configKey)
+            val selected = AppConfig.getTriggerSounds(soundTrigger.configKey)
             _sounds.value = soundBitesRepository.getAllSoundBites().map(SoundBite::name).sortedWith { lhs, rhs ->
                 val lhsSelected = lhs in selected
                 val rhsSelected = rhs in selected
@@ -78,7 +78,7 @@ class ChooseSoundBitesViewModel(
     fun onCheckChange(sound: String, checked: Boolean) {
         getMutableState(sound).value = checked
         viewModelScope.launch {
-            AppConfig.setTriggerSoundSelected(triggerType.configKey, sound, checked)
+            AppConfig.setTriggerSoundSelected(soundTrigger.configKey, sound, checked)
         }
     }
 

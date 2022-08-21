@@ -47,20 +47,20 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.github.mrbean355.bulldog.components.AppWindow
 import com.github.mrbean355.bulldog.components.rememberViewModel
-import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
+import com.github.mrbean355.bulldog.gsi.triggers.SoundTrigger
 import com.github.mrbean355.bulldog.localization.getString
 
 @Composable
 @OptIn(ExperimentalMaterialApi::class)
 fun ChooseSoundBitesScreen(
-    triggerType: SoundTriggerType,
+    soundTrigger: SoundTrigger,
     onCloseRequest: () -> Unit
 ) = AppWindow(
     title = getString("triggers.sounds.title"),
     size = DpSize(400.dp, 800.dp),
     onCloseRequest = onCloseRequest
 ) {
-    val viewModel = rememberViewModel { ChooseSoundBitesViewModel(it, triggerType) }
+    val viewModel = rememberViewModel { ChooseSoundBitesViewModel(it, soundTrigger) }
     val sounds by viewModel.sounds.collectAsState(emptyList())
     val query by viewModel.query.collectAsState()
 

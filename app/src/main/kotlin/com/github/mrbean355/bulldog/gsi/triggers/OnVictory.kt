@@ -19,7 +19,7 @@ package com.github.mrbean355.bulldog.gsi.triggers
 import com.github.mrbean355.dota2.gamestate.PlayingGameState
 import com.github.mrbean355.dota2.map.Team
 
-class OnVictory : SoundTrigger {
+object OnVictory : SoundTrigger {
 
     override fun shouldPlay(previous: PlayingGameState, current: PlayingGameState): Boolean {
         val previousMap = previous.map ?: return false

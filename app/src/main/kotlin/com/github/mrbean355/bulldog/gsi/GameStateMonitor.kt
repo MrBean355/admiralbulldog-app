@@ -20,7 +20,7 @@ import com.github.mrbean355.bulldog.audio.SoundBitePlayer
 import com.github.mrbean355.bulldog.data.AppConfig
 import com.github.mrbean355.bulldog.data.SoundBitesRepository
 import com.github.mrbean355.bulldog.gsi.triggers.SoundTrigger
-import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerTypes
+import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggers
 import com.github.mrbean355.bulldog.gsi.triggers.configKey
 import com.github.mrbean355.dota2.gamestate.PlayingGameState
 import com.github.mrbean355.dota2.server.GameStateServer
@@ -32,13 +32,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlin.random.Random
-import kotlin.reflect.full.createInstance
 
 object GameStateMonitor {
     private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private val soundBitesRepository = SoundBitesRepository()
     private val latestState = MutableStateFlow<PlayingGameState?>(null)
-    private val soundTriggers = mutableListOf<SoundTrigger>()
     private var previousState: PlayingGameState? = null
 
     fun getLatestState(): StateFlow<PlayingGameState?> = latestState.asStateFlow()
@@ -54,22 +52,21 @@ object GameStateMonitor {
         }
     }
 
-    private fun processGameState(currentState: PlayingGameState) = synchronized(soundTriggers) {
+    private fun processGameState(currentState: PlayingGameState) = synchronized(this) {
         val previousMatchId = previousState?.map?.matchId
         val currentMatchId = currentState.map?.matchId
 
         // Recreate sound bites when a new match is entered:
         if (currentMatchId != previousMatchId) {
             previousState = null
-            soundTriggers.clear()
-            soundTriggers.addAll(SoundTriggerTypes.map { it.createInstance() })
+            SoundTriggers.forEach(SoundTrigger::reset)
         }
 
         // Play sound bites that want to be played:
         val localPreviousState = previousState
         if (localPreviousState != null && currentState.map?.isPaused == false) {
             coroutineScope.launch {
-                soundTriggers.forEach {
+                SoundTriggers.forEach {
                     it.process(localPreviousState, currentState)
                 }
             }

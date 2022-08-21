@@ -19,7 +19,7 @@ package com.github.mrbean355.bulldog.sounds
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.github.mrbean355.bulldog.data.AppConfig
-import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggerType
+import com.github.mrbean355.bulldog.gsi.triggers.SoundTrigger
 import com.github.mrbean355.bulldog.gsi.triggers.configKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -27,7 +27,7 @@ import kotlin.math.ceil
 
 class ConfigureSoundTriggerViewModel(
     private val viewModelScope: CoroutineScope,
-    private val triggerType: SoundTriggerType
+    private val soundTrigger: SoundTrigger
 ) {
     private val _isEnabled = mutableStateOf(false)
     private val _chance = mutableStateOf(0f)
@@ -39,8 +39,8 @@ class ConfigureSoundTriggerViewModel(
 
     fun init() {
         viewModelScope.launch {
-            _isEnabled.value = AppConfig.isTriggerEnabled(triggerType.configKey)
-            _chance.value = AppConfig.getTriggerChance(triggerType.configKey)
+            _isEnabled.value = AppConfig.isTriggerEnabled(soundTrigger.configKey)
+            _chance.value = AppConfig.getTriggerChance(soundTrigger.configKey)
         }
         refreshSelectionCount()
     }
@@ -48,14 +48,14 @@ class ConfigureSoundTriggerViewModel(
     fun onCheckChanged(value: Boolean) {
         _isEnabled.value = value
         viewModelScope.launch {
-            AppConfig.setTriggerEnabled(triggerType.configKey, value)
+            AppConfig.setTriggerEnabled(soundTrigger.configKey, value)
         }
     }
 
     fun onChanceChanged(value: Float) {
         _chance.value = ceil(value)
         viewModelScope.launch {
-            AppConfig.setTriggerChance(triggerType.configKey, chance.value)
+            AppConfig.setTriggerChance(soundTrigger.configKey, chance.value)
         }
     }
 
@@ -65,7 +65,7 @@ class ConfigureSoundTriggerViewModel(
 
     private fun refreshSelectionCount() {
         viewModelScope.launch {
-            _selectedSounds.value = AppConfig.getTriggerSounds(triggerType.configKey).size
+            _selectedSounds.value = AppConfig.getTriggerSounds(soundTrigger.configKey).size
         }
     }
 }

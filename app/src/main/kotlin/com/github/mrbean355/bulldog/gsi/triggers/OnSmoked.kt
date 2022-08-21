@@ -18,7 +18,7 @@ package com.github.mrbean355.bulldog.gsi.triggers
 
 import com.github.mrbean355.dota2.gamestate.PlayingGameState
 
-class OnSmoked : SoundTrigger {
+object OnSmoked : SoundTrigger {
 
     override fun shouldPlay(previous: PlayingGameState, current: PlayingGameState): Boolean {
         val previousHero = previous.hero ?: return false

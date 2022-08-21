@@ -21,7 +21,7 @@ import com.github.mrbean355.dota2.item.Items
 
 private const val HandOfMidasName = "item_hand_of_midas"
 
-class OnMidasReady : SoundTrigger {
+object OnMidasReady : SoundTrigger {
 
     override fun shouldPlay(previous: PlayingGameState, current: PlayingGameState): Boolean {
         return previous.items.hasMidasOnCooldown() && current.items.hasMidasOffCooldown()
