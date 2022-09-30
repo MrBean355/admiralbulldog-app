@@ -2,7 +2,7 @@ rootProject.name = "admiralbulldog-app"
 
 pluginManagement {
     plugins {
-        kotlin("jvm") version "1.7.10"
+        kotlin("jvm") version "1.7.20"
         kotlin("plugin.serialization") version "1.7.10"
         id("org.jetbrains.compose") version "1.2.0-beta01"
     }
