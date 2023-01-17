@@ -24,7 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 
 @Composable
 inline fun <VM> rememberViewModel(
-    creator: @DisallowComposableCalls (CoroutineScope) -> VM
+    crossinline creator: @DisallowComposableCalls (CoroutineScope) -> VM
 ): VM {
     val scope = rememberCoroutineScope()
     return remember { creator(scope) }
