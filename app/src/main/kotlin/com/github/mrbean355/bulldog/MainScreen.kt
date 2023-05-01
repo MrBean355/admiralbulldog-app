@@ -42,8 +42,6 @@ import com.github.mrbean355.bulldog.sounds.SyncSoundBitesScreen
 import com.github.mrbean355.bulldog.sounds.ViewSoundTriggersScreen
 
 fun main() = application {
-    AppConfig.initAsync()
-
     AppWindow(
         title = getString("home.title"),
         escapeClosesWindow = false,
@@ -78,6 +76,7 @@ fun main() = application {
     }
 
     LaunchedEffect(Unit) {
+        AppConfig.initAsync()
         viewModel.init()
     }
 }
