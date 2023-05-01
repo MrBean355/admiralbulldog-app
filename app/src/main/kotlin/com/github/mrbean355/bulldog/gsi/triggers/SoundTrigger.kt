@@ -21,16 +21,19 @@ import com.github.mrbean355.bulldog.localization.getString
 
 val SoundTriggers: Set<SoundTrigger> = setOf(
     OnBountyRunesSpawn,
+    OnWisdomRunesSpawn,
     OnKill,
     OnDeath,
     OnRespawn,
     OnHeal,
     OnSmoked,
     OnMidasReady,
+    RoshanTimer,
+    OnPause,
     OnMatchStart,
     OnVictory,
     OnDefeat,
-    Periodically
+    Periodically,
 )
 
 const val Uninitialized: Int = -1
@@ -57,10 +60,14 @@ val SoundTrigger.label: String
         OnKill -> getString("trigger_name_kill")
         OnMatchStart -> getString("trigger_name_match_start")
         OnMidasReady -> getString("trigger_name_midas_ready")
+        OnPause -> getString("trigger_name_paused")
         OnRespawn -> getString("trigger_name_respawn")
         OnSmoked -> getString("trigger_name_smoked")
         OnVictory -> getString("trigger_name_victory")
+        OnWisdomRunesSpawn -> getString("trigger_name_wisdom_runes")
         Periodically -> getString("trigger_name_periodically")
+        RoshanTimer -> getString("trigger_name_roshan")
+        is RunesSpawnTrigger -> error("Implementation not catered for")
     }
 
 val SoundTrigger.description: String
@@ -72,8 +79,12 @@ val SoundTrigger.description: String
         OnKill -> getString("trigger_desc_kill")
         OnMatchStart -> getString("trigger_desc_match_start")
         OnMidasReady -> getString("trigger_desc_midas_ready")
+        OnPause -> getString("trigger_desc_paused")
         OnRespawn -> getString("trigger_desc_respawn")
         OnSmoked -> getString("trigger_desc_smoked")
         OnVictory -> getString("trigger_desc_victory")
+        OnWisdomRunesSpawn -> getString("trigger_desc_wisdom_runes")
         Periodically -> getString("trigger_desc_periodically")
+        RoshanTimer -> getString("trigger_desc_roshan")
+        is RunesSpawnTrigger -> error("Implementation not catered for")
     }

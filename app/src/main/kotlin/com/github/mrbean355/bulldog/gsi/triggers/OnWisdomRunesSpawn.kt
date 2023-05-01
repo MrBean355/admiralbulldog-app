@@ -16,9 +16,9 @@
 
 package com.github.mrbean355.bulldog.gsi.triggers
 
-/** Plays a sound shortly before the bounty runes spawn. */
-object OnBountyRunesSpawn : RunesSpawnTrigger(
-    frequencyMinutes = 3,
-    spawnsAtStart = true,
-    provideWarningPeriod = { 15 } // TODO: from config
+/** Plays a sound shortly before the wisdom runes spawn. */
+object OnWisdomRunesSpawn : RunesSpawnTrigger(
+    frequencyMinutes = 7,
+    spawnsAtStart = false,
+    provideWarningPeriod = { 45 } // TODO: from config
 )

@@ -67,6 +67,7 @@ object GameStateMonitor {
         if (currentMatchId != previousMatchId) {
             previousState = null
             SoundTriggers.forEach(SoundTrigger::reset)
+            Roshan.reset()
         }
 
         // Play sound bites that want to be played:

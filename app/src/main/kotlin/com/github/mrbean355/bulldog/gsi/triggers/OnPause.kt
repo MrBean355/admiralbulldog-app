@@ -16,9 +16,11 @@
 
 package com.github.mrbean355.bulldog.gsi.triggers
 
-/** Plays a sound shortly before the bounty runes spawn. */
-object OnBountyRunesSpawn : RunesSpawnTrigger(
-    frequencyMinutes = 3,
-    spawnsAtStart = true,
-    provideWarningPeriod = { 15 } // TODO: from config
-)
+import com.github.mrbean355.bulldog.gsi.GameState
+
+object OnPause : SoundTrigger {
+
+    override fun shouldPlay(previous: GameState, current: GameState): Boolean {
+        return current.map.isPaused && !previous.map.isPaused
+    }
+}
