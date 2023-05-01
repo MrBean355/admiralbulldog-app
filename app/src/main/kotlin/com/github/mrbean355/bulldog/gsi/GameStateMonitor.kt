@@ -22,7 +22,6 @@ import com.github.mrbean355.bulldog.data.SoundBitesRepository
 import com.github.mrbean355.bulldog.gsi.triggers.SoundTrigger
 import com.github.mrbean355.bulldog.gsi.triggers.SoundTriggers
 import com.github.mrbean355.bulldog.gsi.triggers.configKey
-import com.github.mrbean355.dota2.gamestate.PlayingGameState
 import com.github.mrbean355.dota2.server.GameStateServer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,25 +35,33 @@ import kotlin.random.Random
 object GameStateMonitor {
     private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private val soundBitesRepository = SoundBitesRepository()
-    private val latestState = MutableStateFlow<PlayingGameState?>(null)
-    private var previousState: PlayingGameState? = null
+    private val latestState = MutableStateFlow<GameState?>(null)
+    private var previousState: GameState? = null
 
-    fun getLatestState(): StateFlow<PlayingGameState?> = latestState.asStateFlow()
+    fun getLatestState(): StateFlow<GameState?> = latestState.asStateFlow()
 
     fun start() {
-        coroutineScope.launch {
-            GameStateServer(12345 /* TODO: ConfigPersistence.getPort() */)
-                .setPlayingListener {
-                    processGameState(it)
-                    latestState.value = it
+        GameStateServer(12345 /* TODO: ConfigPersistence.getPort() */)
+            .setPlayingListener { state ->
+                val map = state.map
+                val events = state.events
+                if (map != null && events != null) {
+                    processGameState(GameState(map, state.player, state.hero, state.items, events))
                 }
-                .startAsync()
-        }
+            }
+            .setSpectatingListener { state ->
+                val map = state.map
+                val events = state.events
+                if (map != null && events != null) {
+                    processGameState(GameState(map, null, null, null, events))
+                }
+            }
+            .startAsync()
     }
 
-    private fun processGameState(currentState: PlayingGameState) = synchronized(this) {
+    private fun processGameState(currentState: GameState) = synchronized(this) {
         val previousMatchId = previousState?.map?.matchId
-        val currentMatchId = currentState.map?.matchId
+        val currentMatchId = currentState.map.matchId
 
         // Recreate sound bites when a new match is entered:
         if (currentMatchId != previousMatchId) {
@@ -64,17 +71,19 @@ object GameStateMonitor {
 
         // Play sound bites that want to be played:
         val localPreviousState = previousState
-        if (localPreviousState != null && currentState.map?.isPaused == false) {
+        if (localPreviousState != null && (!localPreviousState.map.isPaused || !currentState.map.isPaused)) {
             coroutineScope.launch {
                 SoundTriggers.forEach {
                     it.process(localPreviousState, currentState)
                 }
             }
         }
+
         previousState = currentState
+        latestState.value = currentState
     }
 
-    private suspend fun SoundTrigger.process(previousState: PlayingGameState, currentState: PlayingGameState) {
+    private suspend fun SoundTrigger.process(previousState: GameState, currentState: GameState) {
         if (AppConfig.isTriggerEnabled(configKey)
             && Random.nextFloat() <= AppConfig.getTriggerChance(configKey) / 100f
             && shouldPlay(previousState, currentState)

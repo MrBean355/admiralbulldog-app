@@ -16,7 +16,7 @@
 
 package com.github.mrbean355.bulldog.gsi.triggers
 
-import com.github.mrbean355.dota2.gamestate.PlayingGameState
+import com.github.mrbean355.bulldog.gsi.GameState
 import com.github.mrbean355.dota2.map.MatchState
 import kotlin.math.ceil
 
@@ -29,8 +29,8 @@ object OnBountyRunesSpawn : SoundTrigger {
     private val warningPeriod = 15 // TODO: ConfigPersistence.getBountyRuneTimer()
     private var nextPlayTime = Uninitialized
 
-    override fun shouldPlay(previous: PlayingGameState, current: PlayingGameState): Boolean {
-        val currentMap = current.map ?: return false
+    override fun shouldPlay(previous: GameState, current: GameState): Boolean {
+        val currentMap = current.map
         if (currentMap.matchState != MatchState.PreGame && currentMap.matchState != MatchState.GameInProgress) {
             // Don't play during the picking phase.
             return false

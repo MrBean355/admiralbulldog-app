@@ -16,14 +16,14 @@
 
 package com.github.mrbean355.bulldog.gsi.triggers
 
-import com.github.mrbean355.dota2.gamestate.PlayingGameState
+import com.github.mrbean355.bulldog.gsi.GameState
 
 object OnDeath : SoundTrigger {
 
-    override fun shouldPlay(previous: PlayingGameState, current: PlayingGameState): Boolean {
-        val previousPlayer = previous.player ?: return false
-        val currentPlayer = current.player ?: return false
+    override fun shouldPlay(previous: GameState, current: GameState): Boolean {
+        previous.player ?: return false
+        current.player ?: return false
 
-        return currentPlayer.deaths > previousPlayer.deaths
+        return current.player.deaths > previous.player.deaths
     }
 }

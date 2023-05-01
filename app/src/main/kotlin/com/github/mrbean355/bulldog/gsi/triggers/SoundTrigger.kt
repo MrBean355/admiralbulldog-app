@@ -16,8 +16,8 @@
 
 package com.github.mrbean355.bulldog.gsi.triggers
 
+import com.github.mrbean355.bulldog.gsi.GameState
 import com.github.mrbean355.bulldog.localization.getString
-import com.github.mrbean355.dota2.gamestate.PlayingGameState
 
 val SoundTriggers: Set<SoundTrigger> = setOf(
     OnBountyRunesSpawn,
@@ -35,10 +35,10 @@ val SoundTriggers: Set<SoundTrigger> = setOf(
 
 const val Uninitialized: Int = -1
 
-interface SoundTrigger {
+sealed interface SoundTrigger {
 
     /** Examine the states and decide if a sound should be played. */
-    fun shouldPlay(previous: PlayingGameState, current: PlayingGameState): Boolean
+    fun shouldPlay(previous: GameState, current: GameState): Boolean
 
     /** Reset any state being managed. */
     fun reset(): Unit = Unit
@@ -61,7 +61,6 @@ val SoundTrigger.label: String
         OnSmoked -> getString("trigger_name_smoked")
         OnVictory -> getString("trigger_name_victory")
         Periodically -> getString("trigger_name_periodically")
-        else -> throw IllegalArgumentException("Unexpected trigger: $this")
     }
 
 val SoundTrigger.description: String
@@ -77,5 +76,4 @@ val SoundTrigger.description: String
         OnSmoked -> getString("trigger_desc_smoked")
         OnVictory -> getString("trigger_desc_victory")
         Periodically -> getString("trigger_desc_periodically")
-        else -> throw IllegalArgumentException("Unexpected trigger: $this")
     }

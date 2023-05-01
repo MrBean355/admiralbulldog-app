@@ -16,7 +16,7 @@
 
 package com.github.mrbean355.bulldog.gsi.triggers
 
-import com.github.mrbean355.dota2.gamestate.PlayingGameState
+import com.github.mrbean355.bulldog.gsi.GameState
 import kotlin.random.Random
 
 /** Must have healed at least this much percentage. */
@@ -34,29 +34,32 @@ private const val MAX_HEAL = 400
  */
 object OnHeal : SoundTrigger {
 
-    override fun shouldPlay(previous: PlayingGameState, current: PlayingGameState): Boolean {
-        val previousHero = previous.hero ?: return false
-        val currentHero = current.hero ?: return false
+    override fun shouldPlay(previous: GameState, current: GameState): Boolean {
+        previous.hero ?: return false
+        current.hero ?: return false
 
-        if (previousHero.health <= 0) {
+        if (!previous.hero.isAlive && current.hero.isAlive) {
             // We get healed on respawn; ignore.
             return false
         }
-        if (currentHero.maxHealth != previousHero.maxHealth) {
+
+        if (current.hero.maxHealth != previous.hero.maxHealth) {
             // Ignore heals caused by increasing max HP.
             return false
         }
-        if (currentHero.healthPercent - previousHero.healthPercent < MIN_HP_PERCENTAGE) {
+
+        if (current.hero.healthPercent - previous.hero.healthPercent < MIN_HP_PERCENTAGE) {
             // Small heal; ignore.
             return false
         }
+
         return true
     }
 
-    fun doesSmartChanceProc(previous: PlayingGameState, current: PlayingGameState): Boolean {
-        val previousHero = previous.hero ?: return false
-        val currentHero = current.hero ?: return false
+    fun doesSmartChanceProc(previous: GameState, current: GameState): Boolean {
+        previous.hero ?: return false
+        current.hero ?: return false
 
-        return Random.nextFloat() <= (currentHero.health - previousHero.health) / MAX_HEAL
+        return Random.nextFloat() <= (current.hero.health - previous.hero.health) / MAX_HEAL.toFloat()
     }
 }

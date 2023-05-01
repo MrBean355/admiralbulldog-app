@@ -16,18 +16,16 @@
 
 package com.github.mrbean355.bulldog.gsi.triggers
 
-import com.github.mrbean355.dota2.gamestate.PlayingGameState
+import com.github.mrbean355.bulldog.gsi.GameState
 import kotlin.random.Random
 
 object Periodically : SoundTrigger {
     private var nextPlayClockTime = Uninitialized
 
-    override fun shouldPlay(previous: PlayingGameState, current: PlayingGameState): Boolean {
-        val currentMap = current.map ?: return false
-
+    override fun shouldPlay(previous: GameState, current: GameState): Boolean {
         if (nextPlayClockTime == Uninitialized) {
-            nextPlayClockTime = currentMap.clockTime + randomiseDelay()
-        } else if (currentMap.clockTime >= nextPlayClockTime) {
+            nextPlayClockTime = current.map.clockTime + randomiseDelay()
+        } else if (current.map.clockTime >= nextPlayClockTime) {
             nextPlayClockTime += randomiseDelay()
             return true
         }

@@ -16,18 +16,16 @@
 
 package com.github.mrbean355.bulldog.gsi.triggers
 
-import com.github.mrbean355.dota2.gamestate.PlayingGameState
+import com.github.mrbean355.bulldog.gsi.GameState
 import com.github.mrbean355.dota2.map.Team
 
 object OnDefeat : SoundTrigger {
 
-    override fun shouldPlay(previous: PlayingGameState, current: PlayingGameState): Boolean {
-        val previousMap = previous.map ?: return false
-        val currentMap = current.map ?: return false
-        val currentPlayer = current.player ?: return false
+    override fun shouldPlay(previous: GameState, current: GameState): Boolean {
+        current.player ?: return false
 
-        return currentMap.winningTeam != Team.None
-                && previousMap.winningTeam == Team.None
-                && currentPlayer.team != currentMap.winningTeam
+        return current.map.winningTeam != Team.None
+                && previous.map.winningTeam == Team.None
+                && current.player.team != current.map.winningTeam
     }
 }

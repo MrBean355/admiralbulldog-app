@@ -16,28 +16,35 @@
 
 package com.github.mrbean355.bulldog.gsi.triggers
 
-import com.github.mrbean355.dota2.gamestate.PlayingGameState
+import com.github.mrbean355.bulldog.gsi.GameState
+import com.github.mrbean355.dota2.item.Item
 import com.github.mrbean355.dota2.item.Items
 
 private const val HandOfMidasName = "item_hand_of_midas"
 
 object OnMidasReady : SoundTrigger {
 
-    override fun shouldPlay(previous: PlayingGameState, current: PlayingGameState): Boolean {
-        return previous.items.hasMidasOnCooldown() && current.items.hasMidasOffCooldown()
+    override fun shouldPlay(previous: GameState, current: GameState): Boolean {
+        previous.items ?: return false
+        current.items ?: return false
+
+        return previous.items.isMidasOnCooldown() && current.items.isMidasOffCooldown()
     }
 
-    private fun Items?.hasMidasOnCooldown(): Boolean {
-        this ?: return false
-        return inventory
-            .filter { it.name == HandOfMidasName }
-            .any { (it.cooldown ?: 0) > 0 }
+    private fun Items.isMidasOnCooldown(): Boolean {
+        return inventory.any { it.isMidasOnCooldown() }
     }
 
-    private fun Items?.hasMidasOffCooldown(): Boolean {
-        this ?: return false
-        return inventory
-            .filter { it.name == HandOfMidasName }
-            .any { it.cooldown == 0 }
+    private fun Items.isMidasOffCooldown(): Boolean {
+        return inventory.any { it.isMidasOffCooldown() }
+    }
+
+    private fun Item.isMidasOffCooldown(): Boolean {
+        return name == HandOfMidasName && cooldown == 0
+    }
+
+    private fun Item.isMidasOnCooldown(): Boolean {
+        val cd = cooldown
+        return name == HandOfMidasName && cd != null && cd > 0
     }
 }

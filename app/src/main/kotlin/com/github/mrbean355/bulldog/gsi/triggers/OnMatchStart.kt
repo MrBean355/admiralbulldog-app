@@ -16,17 +16,15 @@
 
 package com.github.mrbean355.bulldog.gsi.triggers
 
-import com.github.mrbean355.dota2.gamestate.PlayingGameState
+import com.github.mrbean355.bulldog.gsi.GameState
 import com.github.mrbean355.dota2.map.MatchState
 
 /** Plays a sound just after the clock hits 0. */
 object OnMatchStart : SoundTrigger {
     private var played = false
 
-    override fun shouldPlay(previous: PlayingGameState, current: PlayingGameState): Boolean {
-        val currentMap = current.map ?: return false
-
-        if (!played && currentMap.matchState == MatchState.GameInProgress && currentMap.clockTime < 5) {
+    override fun shouldPlay(previous: GameState, current: GameState): Boolean {
+        if (!played && current.map.matchState == MatchState.GameInProgress && current.map.clockTime < 5) {
             played = true
             return true
         }
