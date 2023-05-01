@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.mrbean355.bulldog.data
+package com.github.mrbean355.bulldog.data.service
 
-data class SoundBite internal constructor(
+import kotlinx.serialization.Serializable
+
+@Serializable
+internal data class PlaySoundDto(
     val name: String,
+    val checksum: String,
     val category: String,
-    val filePath: String,
 )

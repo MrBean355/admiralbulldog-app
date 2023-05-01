@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.mrbean355.bulldog.data
+package com.github.mrbean355.bulldog.data.service
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -30,7 +30,7 @@ import io.ktor.utils.io.core.readBytes
 import java.io.File
 
 private const val BaseUrl = "http://prod.upmccxmkjx.us-east-2.elasticbeanstalk.com:8090"
-private const val ListSoundsPath = "$BaseUrl/soundBites/listV2"
+private const val ListSoundsPath = "$BaseUrl/soundBites/v3/list"
 private const val DownloadSoundPath = "$BaseUrl/soundBites/%s"
 
 internal object BulldogService {
@@ -43,7 +43,7 @@ internal object BulldogService {
         }
     }
 
-    suspend fun listSoundBites(): Response<Map<String, String>> {
+    suspend fun listSoundBites(): Response<List<PlaySoundDto>> {
         return try {
             client.get(ListSoundsPath).toResponse()
         } catch (t: Throwable) {

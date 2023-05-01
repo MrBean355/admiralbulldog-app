@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.mrbean355.bulldog.data
+package com.github.mrbean355.bulldog.data.service
 
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse

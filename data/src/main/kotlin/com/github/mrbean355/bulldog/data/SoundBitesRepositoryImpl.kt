@@ -16,6 +16,8 @@
 
 package com.github.mrbean355.bulldog.data
 
+import com.github.mrbean355.bulldog.data.service.BulldogService
+import com.github.mrbean355.bulldog.data.service.Response
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.channelFlow
@@ -24,6 +26,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
@@ -33,6 +38,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicInteger
 
 private const val SoundsDir = "sounds"
+private const val ManifestFile = "sounds.json"
 private const val ConcurrentDownloads = 50
 
 internal class SoundBitesRepositoryImpl : SoundBitesRepository {
@@ -43,8 +49,11 @@ internal class SoundBitesRepositoryImpl : SoundBitesRepository {
                 return@withLock cache
             }
 
+            val fileContent = AppStorage.getFile(ManifestFile).readText()
+            val categoryMapping = Json.decodeFromString<Map<String, String>>(fileContent)
+
             AppStorage.getDirectory(SoundsDir).listFiles().orEmpty()
-                .map { SoundBite(it.nameWithoutExtension, it.absolutePath) }
+                .map { SoundBite(it.nameWithoutExtension, categoryMapping.getValue(it.name), it.absolutePath) }
                 .also(cache::addAll)
         }
     }
@@ -61,7 +70,7 @@ internal class SoundBitesRepositoryImpl : SoundBitesRepository {
             return@channelFlow
         }
 
-        val downloadQueue = ConcurrentLinkedQueue(soundsResponse.data.keys)
+        val downloadQueue = ConcurrentLinkedQueue(soundsResponse.data)
         val parentDir = AppStorage.getDirectory(SoundsDir)
 
         val totalFiles = soundsResponse.data.size
@@ -73,7 +82,7 @@ internal class SoundBitesRepositoryImpl : SoundBitesRepository {
 
         // Delete files which don't exist remotely.
         parentDir.listFiles().orEmpty()
-            .filterNot { soundsResponse.data.keys.contains(it.name) }
+            .filter { file -> soundsResponse.data.none { it.name == file.name } }
             .onEach { deleted += it.name }
             .forEach { it.deleteRecursively() }
 
@@ -85,13 +94,13 @@ internal class SoundBitesRepositoryImpl : SoundBitesRepository {
                 launch {
                     while (true) {
                         val sound = downloadQueue.poll() ?: break
-                        val target = File(parentDir, sound)
+                        val target = File(parentDir, sound.name)
                         val exists = target.exists()
-                        if (!exists || !verifyChecksum(target, soundsResponse.data.getValue(sound))) {
-                            if (BulldogService.downloadSoundBite(sound, target) is Response.Success) {
-                                (if (exists) changed else added) += SoundBite(sound.substringBeforeLast('.'), target.absolutePath)
+                        if (!exists || !verifyChecksum(target, sound.checksum)) {
+                            if (BulldogService.downloadSoundBite(sound.name, target) is Response.Success) {
+                                (if (exists) changed else added) += SoundBite(sound.name.substringBeforeLast('.'), sound.category, target.absolutePath)
                             } else {
-                                failed += sound
+                                failed += sound.name
                             }
                         }
                         send(SoundBiteSyncState.Progress(complete.incrementAndGet(), totalFiles))
@@ -99,6 +108,10 @@ internal class SoundBitesRepositoryImpl : SoundBitesRepository {
                 }
             }
         }
+
+        val categoryMapping = soundsResponse.data.associate { it.name to it.category }
+        AppStorage.getFile(ManifestFile).writeText(Json.encodeToString(categoryMapping))
+        cache.clear()
 
         send(SoundBiteSyncState.Complete(added, changed, deleted, failed))
 
