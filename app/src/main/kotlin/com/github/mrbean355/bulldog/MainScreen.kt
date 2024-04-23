@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Michael Johnston
+ * Copyright 2024 Michael Johnston
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,8 @@ import com.github.mrbean355.bulldog.sounds.SyncSoundBitesScreen
 import com.github.mrbean355.bulldog.sounds.ViewSoundTriggersScreen
 
 fun main() = application {
+    AppConfig.initAsync()
+
     AppWindow(
         title = getString("home.title"),
         escapeClosesWindow = false,
@@ -76,7 +78,6 @@ fun main() = application {
     }
 
     LaunchedEffect(Unit) {
-        AppConfig.initAsync()
         viewModel.init()
     }
 }
