@@ -25,5 +25,5 @@ dependencies {
     implementation(project(":data"))
     implementation(compose.desktop.currentOs)
     implementation("com.github.mrbean355:dota2-gsi:2.4.0")
-    implementation("uk.co.caprica:vlcj:4.8.2")
+    implementation("uk.co.caprica:vlcj:4.8.3")
 }
